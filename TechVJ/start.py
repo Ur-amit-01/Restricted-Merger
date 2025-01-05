@@ -48,12 +48,6 @@ def progress(current, total, message, type):
 
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
-    buttons = [[
-        InlineKeyboardButton("❣️ Developer", url="https://t.me/kingvj01")
-    ], [
-        InlineKeyboardButton('🔍 Support Group', url='https://t.me/vj_bot_disscussion'),
-        InlineKeyboardButton('🤖 Update Channel', url='https://t.me/vj_botz')
-    ]]
     reply_markup = InlineKeyboardMarkup(buttons)
     await client.send_message(
         chat_id=message.chat.id,
