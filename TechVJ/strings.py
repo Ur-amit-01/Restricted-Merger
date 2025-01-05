@@ -2,34 +2,23 @@
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
 # Ask Doubt on telegram @KingVJ01
 
-HELP_TXT = """**🌟 Help Menu** 
+HELP_TXT = """**🌟 Help Menu**
 
-**__FOR PRIVATE CHATS__**
+**🔒 Private Chats**
 
-__first send invite link of the chat (unnecessary if the account of string session already member of the chat)
-then send post/s link__
+1. Send the invite link (if not already a member).  
+2. Send the post link to download content.
 
+**🌐 Public Chats**
+• Simply share the post link.
 
-**__FOR BOT CHATS__**
-
-__send link with '/b/', bot's username and message id, you might want to install some unofficial client to get the id like below__
-
+**📂 Batch Mode**
+• Download multiple posts using this format:  
 ```
-https://t.me/b/botusername/4321
-```
-
-**__MULTI POSTS__**
-
-__send public/private posts link as explained above with formate "from - to" to send multiple messages like below__
-
-
-```
-https://t.me/xxxx/1001-1010
-
-https://t.me/c/xxxx/101 - 120
+https://t.me/username/1001-1010
 ```
 
-__note that space in between doesn't matter__"""
+> **👨‍💻 Developer : @Ur_Amit_01**"""
        
 # Don't Remove Credit Tg - @VJ_Botz
 # Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
