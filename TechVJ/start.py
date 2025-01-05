@@ -8,7 +8,7 @@ from config import API_ID, API_HASH, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
 
 # Provide your session string here
-SESSION_STRING = "your_session_string_here"
+SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 class batch_temp(object):
     IS_BATCH = {}
