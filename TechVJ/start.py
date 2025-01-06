@@ -59,6 +59,7 @@ async def send_help(client: Client, message: Message):
     await client.send_message(
         chat_id=message.chat.id,
         text=f"{HELP_TXT}"
+        disable_web_page_preview=True
     )
 
 @Client.on_message(filters.command(["cancel"]))
