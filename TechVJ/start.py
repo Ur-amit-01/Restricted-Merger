@@ -70,6 +70,7 @@ async def send_cancel(client: Client, message: Message):
         text="**Batch Successfully Cancelled.**"
     )
 
+
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
     if "https://t.me/" in message.text:
@@ -85,6 +86,9 @@ async def save(client: Client, message: Message):
             toID = fromID
 
         batch_temp.IS_BATCH[message.from_user.id] = False
+
+        # Record the start time
+        start_time = datetime.datetime.now()
 
         # Connect using the session string
         acc = Client("manual_session", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
@@ -119,6 +123,27 @@ async def save(client: Client, message: Message):
                         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
             await asyncio.sleep(1)
+
+        # Calculate the end time
+        end_time = datetime.datetime.now()
+
+        # Calculate elapsed time in minutes and seconds
+        elapsed_time = end_time - start_time
+        minutes, seconds = divmod(elapsed_time.seconds, 60)
+
+        # Calculate total messages processed
+        total_messages = toID - fromID + 1
+        
+        # Send completion message to the user
+await client.send_message(
+    chat_id=message.chat.id,
+    text=f"✨ **Batch Task Completed Successfully!** ✨\n\n"
+         f"   📨 **Total Tasks Processed:** `{total_messages}`\n"
+         f"   ⏳ **Elapsed Time:** `{minutes} minutes and {seconds} seconds`\n\n"
+         f"🎉 **Thanks for using me !**",
+    reply_to_message_id=message.id
+)
+
         batch_temp.IS_BATCH[message.from_user.id] = True
         await acc.disconnect()
 
