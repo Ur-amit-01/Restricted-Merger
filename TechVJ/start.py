@@ -74,7 +74,7 @@ async def send_cancel(client: Client, message: Message):
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
     if "https://t.me/" in message.text:
-        if not batch_temp.IS_BATCH.get(message.from_user.id, True):
+        if batch_temp.IS_BATCH.get(message.from_user.id) == False:
             return await message.reply_text("**One Task Is Already Processing. Wait For It To Complete. If You Want To Cancel This Task Then Use - /cancel**")
 
         datas = message.text.split("/")
@@ -87,63 +87,66 @@ async def save(client: Client, message: Message):
 
         batch_temp.IS_BATCH[message.from_user.id] = False
 
-        try:
-            start_time = datetime.datetime.now()
+        # Record the start time
+        start_time = datetime.datetime.now()
 
-            acc = Client("manual_session", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
-            await acc.connect()
+        # Connect using the session string
+        acc = Client("manual_session", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
+        await acc.connect()
 
-            for msgid in range(fromID, toID + 1):
-                if batch_temp.IS_BATCH.get(message.from_user.id, True):
-                    break
+        for msgid in range(fromID, toID + 1):
+            if batch_temp.IS_BATCH.get(message.from_user.id):
+                break
 
-                if "https://t.me/c/" in message.text:
-                    chatid = int("-100" + datas[4])
-                    try:
-                        await handle_private(client, acc, message, chatid, msgid)
-                    except Exception as e:
-                        if ERROR_MESSAGE:
-                            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-                else:
-                    username = datas[3]
-                    try:
-                        msg = await client.get_messages(username, msgid)
-                    except UsernameNotOccupied:
-                        await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
-                        return
-                    except Exception as e:
-                        if ERROR_MESSAGE:
-                            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-                        continue
+            # Handle private chats
+            if "https://t.me/c/" in message.text:
+                chatid = int("-100" + datas[4])
+                try:
+                    await handle_private(client, acc, message, chatid, msgid)
+                except Exception as e:
+                    if ERROR_MESSAGE:
+                        await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
-                    try:
-                        await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
-                    except Exception as e:
-                        if ERROR_MESSAGE:
-                            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
+            # Handle public chats
+            else:
+                username = datas[3]
+                try:
+                    msg = await client.get_messages(username, msgid)
+                except UsernameNotOccupied:
+                    await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
+                    return
 
-                await asyncio.sleep(1)
+                try:
+                    await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
+                except Exception as e:
+                    if ERROR_MESSAGE:
+                        await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
-            end_time = datetime.datetime.now()
-            elapsed_time = end_time - start_time
-            minutes, seconds = divmod(elapsed_time.seconds, 60)
-            total_messages = toID - fromID + 1
+            await asyncio.sleep(1)
 
-            await client.send_message(
-                chat_id=message.chat.id,
-                text=f"✨ **Batch Task Completed Successfully!** ✨\n\n"
-                     f"   📨 **Total Tasks Processed:** `{total_messages}`\n"
-                     f"   ⏳ **Elapsed Time:** `{minutes}m, {seconds}s`\n\n"
-                     f"🎉 **Thanks for using me !**",
-                reply_to_message_id=message.id
-            )
-        except Exception as e:
-            if ERROR_MESSAGE:
-                await client.send_message(message.chat.id, f"Critical Error: {e}", reply_to_message_id=message.id)
-        finally:
-            batch_temp.IS_BATCH[message.from_user.id] = True
-            await acc.disconnect()
-            
+        # Calculate the end time
+        end_time = datetime.datetime.now()
+
+        # Calculate elapsed time in minutes and seconds
+        elapsed_time = end_time - start_time
+        minutes, seconds = divmod(elapsed_time.seconds, 60)
+
+        # Calculate total messages processed
+        total_messages = toID - fromID + 1
+        
+        # Send completion message to the user
+        await client.send_message(
+            chat_id=message.chat.id,
+            text=f"✨ **Batch Task Completed Successfully!** ✨\n\n"
+                 f"   📨 **Total Tasks Processed:** `{total_messages}`\n"
+                 f"   ⏳ **Elapsed Time:** `{minutes} minutes and {seconds} seconds`\n\n"
+                 f"🎉 **Thanks for using me !**",
+            reply_to_message_id=message.id
+        )
+
+        batch_temp.IS_BATCH[message.from_user.id] = True  # Aligned with the previous block
+        await acc.disconnect()
+        
 
 # handle private
 async def handle_private(client: Client, acc, message: Message, chatid: int, msgid: int):
