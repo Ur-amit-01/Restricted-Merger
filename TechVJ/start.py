@@ -51,14 +51,16 @@ async def send_start(client: Client, message: Message):
     await client.send_message(
         chat_id=message.chat.id,
         text=f"<b>👋 Hi {message.from_user.mention}, I am Save Restricted Content Bot. I can send you restricted content by its post link.\n\nKnow how to use bot by - /help</b>\n\n> **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**",
-        reply_to_message_id=message.id
+        reply_to_message_id=message.id,
+        disable_web_page_preview=True
     )
 
 @Client.on_message(filters.command(["help"]))
 async def send_help(client: Client, message: Message):
     await client.send_message(
         chat_id=message.chat.id,
-        text=f"{HELP_TXT}"
+        text=f"{HELP_TXT}",
+        disable_web_page_preview=True
     )
 
 @Client.on_message(filters.command(["cancel"]))
@@ -117,7 +119,7 @@ async def save(client: Client, message: Message):
                     if ERROR_MESSAGE:
                         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
-            await asyncio.sleep(3)
+            await asyncio.sleep(1)
         batch_temp.IS_BATCH[message.from_user.id] = True
         await acc.disconnect()
 
