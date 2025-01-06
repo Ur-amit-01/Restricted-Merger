@@ -144,8 +144,8 @@ await client.send_message(
     reply_to_message_id=message.id
 )
 
-        batch_temp.IS_BATCH[message.from_user.id] = True
-        await acc.disconnect()
+batch_temp.IS_BATCH[message.from_user.id] = True  # Aligned with the previous block
+await acc.disconnect()
 
 # Reuse the handle_private and get_message_type functions from the original code without modification
 
