@@ -1,3 +1,4 @@
+telegram
 pyrofork
 tgcrypto
 motor
