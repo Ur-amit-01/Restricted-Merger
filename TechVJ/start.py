@@ -5,7 +5,7 @@ from PyPDF2 import PdfMerger
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-from config import API_ID, API_HASH, ERROR_MESSAGE
+from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
 
 # Provide your session string here
@@ -74,15 +74,7 @@ async def send_cancel(client: Client, message: Message):
 
 #----------------PDF Merge-------------------
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-API_ID = os.getenv("API_ID")
-API_HASH = os.getenv("API_HASH")
-
-if not all([BOT_TOKEN, API_ID, API_HASH]):
-    raise ValueError("One or more environment variables are missing!")
-
 bot = Client("PDFGenieBot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH)
-
 
 user_files = {}
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20 MB
