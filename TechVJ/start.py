@@ -8,6 +8,8 @@ from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
 from PyPDF2 import PdfMerger
 import tempfile
+from pyrogram import filters
+
 
 # Dictionary to store user's PDF collection state
 user_pdf_collection = {}
@@ -65,9 +67,13 @@ async def merge_and_send(client: Client, message: Message):
         if os.path.exists(output_file):
             os.remove(output_file)
 
-@Client.on_message(filters.document.mime_type("application/pdf") & filters.private)
-async def collect_pdfs(client: Client, message: Message):
-    user_id = message.from_user.id
+@Client.on_message(filters.document & filters.private)
+async def handle_pdf(client, message):
+    # Check if the document is a PDF
+    if message.document.mime_type == "application/pdf":
+        await message.reply_text("PDF received. Do you want to add it to the merge list?")
+    else:
+        await message.reply_text("This is not a valid PDF file.")
     
     # Ensure the user has initiated the merging process
     if user_id not in user_pdf_collection:
