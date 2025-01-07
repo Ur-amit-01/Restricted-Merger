@@ -6,7 +6,93 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, User
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
+from PyPDF2 import PdfMerger
+import tempfile
+
+# Dictionary to store user's PDF collection state
+user_pdf_collection = {}
+
+@Client.on_message(filters.command(["merge"]))
+async def start_pdf_collection(client: Client, message: Message):
+    user_id = message.from_user.id
+    user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
+    await message.reply_text(
+        "Send me the PDFs you want to merge, one by one. When you're done, send /done."
+    )
+
+@Client.on_message(filters.command(["done"]))
+async def merge_and_send(client: Client, message: Message):
+    user_id = message.from_user.id
     
+    if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
+        await message.reply_text(
+            "You need to send at least 2 PDFs before using /done. Use /merge to start over."
+        )
+        return
+    
+    # Create a temporary file for the merged PDF
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
+        output_file = temp_file.name
+
+    # Merge the PDFs
+    try:
+        merger = PdfMerger()
+        for pdf in user_pdf_collection[user_id]:
+            merger.append(pdf)
+        merger.write(output_file)
+        merger.close()
+        
+        # Send the merged PDF
+        await client.send_document(
+            chat_id=message.chat.id,
+            document=output_file,
+            caption="Here is your merged PDF. ✅",
+            reply_to_message_id=message.id
+        )
+        
+        # Send a confirmation message
+        await message.reply_text("Your PDFs have been successfully merged!")
+    
+    except Exception as e:
+        await message.reply_text(f"Failed to merge PDFs: {e}")
+    
+    finally:
+        # Clean up temporary files
+        for pdf in user_pdf_collection[user_id]:
+            if os.path.exists(pdf):
+                os.remove(pdf)
+        user_pdf_collection.pop(user_id, None)
+        if os.path.exists(output_file):
+            os.remove(output_file)
+
+@Client.on_message(filters.document.mime_type("application/pdf") & filters.private)
+async def collect_pdfs(client: Client, message: Message):
+    user_id = message.from_user.id
+    
+    # Ensure the user has initiated the merging process
+    if user_id not in user_pdf_collection:
+        await message.reply_text(
+            "Use /merge to start merging PDFs before sending any files."
+        )
+        return
+    
+    # Limit to 10 PDFs per user
+    if len(user_pdf_collection[user_id]) >= 20:
+        await message.reply_text(
+            "You can only upload up to 20 PDFs for merging. Send /done to merge the files."
+        )
+        return
+
+    # Download the PDF file
+    temp_file = await message.download()
+    user_pdf_collection[user_id].append(temp_file)
+
+    await message.reply_text(
+        f"PDF {len(user_pdf_collection[user_id])} uploaded successfully. Send more or use /done to merge them."
+    )
+
+#✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
+
 # Provide your session string here
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
