@@ -6,21 +6,17 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, User
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
+
+
+import os
 import subprocess
 import glob
 import logging
 import re
 from collections import Counter
 from os.path import basename
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import (
-    Application, 
-    CommandHandler, 
-    MessageHandler, 
-    filters, 
-    CallbackQueryHandler, 
-    ContextTypes,
-)
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
 from PyPDF2 import PdfMerger, PdfReader
 
 # Directory to store uploaded files
@@ -29,10 +25,8 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Resolve file name conflicts
 def resolve_file_name_conflict(output_path):
-    """
-    Resolve naming conflicts by appending a numeric suffix if the file already exists.
-    """
     base, ext = os.path.splitext(output_path)
     counter = 1
     while os.path.exists(output_path):
@@ -40,96 +34,87 @@ def resolve_file_name_conflict(output_path):
         counter += 1
     return output_path
 
+# Analyze filenames to generate a merged filename
 def analyze_and_generate_filename(file_paths, upload_dir):
-    """
-    Analyze filenames to find common words and generate a merged filename.
-
-    Args:
-        file_paths (list of str): List of file paths to analyze.
-        upload_dir (str): Directory to store the merged file.
-
-    Returns:
-        str: Generated filename for the merged PDF.
-    """
     if not file_paths:
         return os.path.join(upload_dir, "merged.pdf")
 
-    # Extract words from filenames
     words_list = []
     for file_path in file_paths:
         file_name = os.path.splitext(os.path.basename(file_path))[0]
-        words = re.findall(r'\b\w+\b', file_name.lower())  # Extract words, ignoring case
+        words = re.findall(r'\b\w+\b', file_name.lower())
         words_list.extend(words)
 
-    # Count word occurrences across all filenames
     word_counts = Counter(words_list)
 
-    # Filter for common words appearing in all filenames
-    common_words = [
-        word for word, count in word_counts.items() if count == len(file_paths)
-    ]
+    common_words = [word for word, count in word_counts.items() if count == len(file_paths)]
 
-    # Create the merged filename
     if common_words:
-        common_part = "_".join(common_words[:3])  # Limit to 3 common words for brevity
+        common_part = "_".join(common_words[:3])
         merged_filename = f"{common_part}_merged.pdf"
     else:
         merged_filename = "merged.pdf"
 
-    # Resolve naming conflicts
     merged_file_path = os.path.join(upload_dir, merged_filename)
-    merged_file_path = resolve_file_name_conflict(merged_file_path)
+    return resolve_file_name_conflict(merged_file_path)
 
-    return merged_file_path
-
-async def handle_file(update, context):
-    """Handle file uploads from the user."""
+# Handle file uploads
+async def handle_file(update: Update, context: CallbackContext) -> None:
     document = update.message.document
     file_name = document.file_name
     file_type = document.mime_type
     file_path = os.path.join(UPLOAD_DIR, basename(file_name))
 
-    # Resolve file name conflicts
     file_path = resolve_file_name_conflict(file_path)
 
-    # Retrieve the file object and download the file
+    if "status_message" not in context.user_data:
+        context.user_data["status_message"] = await update.message.reply_text(
+            "Processing your file..."
+        )
+    else:
+        pass
+
     file = await document.get_file()
     await file.download_to_drive(file_path)
 
-    # Validate file type
-    if file_type not in [
-        "application/pdf",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "application/msword",
-    ]:
-        await update.message.reply_text(
-            f"The file {file_name} is not supported. I only accept PDF and Word files."
-        )
+    if file_type not in ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"]:
+        await context.user_data["status_message"].edit_text(f"File {file_name} not supported. Only PDF and Word are accepted.")
         os.remove(file_path)
         return
 
-    # Convert Word to PDF if needed
     if file_type != "application/pdf":
         try:
-            file_path = convert_to_pdf(file_path)
-            await update.message.reply_text(
-                f"☑️ The file {file_name} was successfully converted to PDF!"
-            )
+            pdf_path = convert_to_pdf(file_path)
+            await context.user_data["status_message"].edit_text(f"File {file_name} successfully converted to PDF!")
+            file_path = pdf_path
         except Exception as e:
-            await update.message.reply_text(
-                f"❌ Failed to convert the file {file_name}. Error: {e}"
-            )
-            logger.error(f"❌ Failed to convert the file {file_name}. Error: {e}")
+            await context.user_data["status_message"].edit_text(f"Failed to convert {file_name}. Error: {e}")
             os.remove(file_path)
             return
 
-    # Add the file to the user data
     context.user_data.setdefault("files", []).append(file_path)
 
-async def merge_pdfs(update, context):
+    if len(context.user_data["files"]) == 1:
+        await context.user_data["status_message"].reply_text(
+            "Do you want to merge all files into one PDF or leave them as they are?",
+            reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("Merge", callback_data="merge"), InlineKeyboardButton("Leave", callback_data="leave")]])
+        )
+    else:
+        await context.user_data["status_message"].edit_text(f"File {file_name} processed.")
+
+# Convert Word to PDF
+def convert_to_pdf(input_path: str) -> str:
+    output_path = input_path.rsplit(".", 1)[0] + ".pdf"
+    output_path = resolve_file_name_conflict(output_path)
+    command = ["soffice", "--headless", "--convert-to", "pdf", input_path, "--outdir", UPLOAD_DIR]
+    subprocess.run(command, check=True)
+    return output_path
+
+# Merge PDFs
+async def merge_pdfs(update: Update, context: CallbackContext) -> None:
     files = context.user_data.get("files", [])
     if not files:
-        await update.message.reply_text("There are no files to merge.")
+        await update.message.reply_text("No files to merge.")
         return
 
     output_path = analyze_and_generate_filename(files, UPLOAD_DIR)
@@ -142,29 +127,63 @@ async def merge_pdfs(update, context):
         merger.write(output_path)
         merger.close()
 
-        # Send the merged PDF to the user
-        await update.message.reply_text("The files have been successfully merged! Sending now.")
+        await update.message.reply_text("Files successfully merged! Sending...")
         await update.message.reply_document(document=open(output_path, "rb"))
+
     except Exception as e:
-        await update.message.reply_text(f"Error merging the files: {e}")
+        await update.message.reply_text(f"Error merging files: {e}")
+
     finally:
         for file_path in files:
-            os.remove(file_path)
+            try:
+                os.remove(file_path)
+            except FileNotFoundError:
+                logger.error(f"Error removing file {file_path}")
         context.user_data.clear()
 
-def convert_to_pdf(input_path):
-    output_path = input_path.rsplit(".", 1)[0] + ".pdf"
-    output_path = resolve_file_name_conflict(output_path)
-    command = ["soffice", "--headless", "--convert-to", "pdf", input_path, "--outdir", UPLOAD_DIR]
-    subprocess.run(command, check=True)
-    return output_path
+# Cancel the operation
+async def cancel(update: Update, context: CallbackContext) -> None:
+    await update.message.reply_text("Operation cancelled. All uploaded files removed.")
+    for file_path in context.user_data.get("files", []):
+        os.remove(file_path)
+    context.user_data["files"] = []
 
-# Main function to add handlers to your bot
-def add_handlers(application):
+# Handle callback queries (e.g., merge or leave options)
+async def callback_query_handler(update: Update, context: CallbackContext) -> None:
+    query = update.callback_query
+    await query.answer()
+
+    if query.data == "merge":
+        await merge_pdfs(update, context)
+    elif query.data == "leave":
+        await query.edit_message_text("Files are kept as they are.")
+        await send_files(update, context)
+
+# Send files to user
+async def send_files(update: Update, context: CallbackContext) -> None:
+    files = context.user_data.get("files", [])
+    for file_path in files:
+        await update.message.reply_document(document=open(file_path, "rb"))
+
+    for file in files:
+        os.remove(file)
+    context.user_data.clear()
+
+# Main function
+def main() -> None:
+    token = "BOT_TOKEN"
+    application = Application.builder().token(token).build()
+
+    application.add_handler(CommandHandler("cancel", cancel))
     application.add_handler(MessageHandler(filters.Document.ALL, handle_file))
-    application.add_handler(MessageHandler(filters.TEXT & filters.Regex("^Merge$"), merge_pdfs))
-    
+    application.add_handler(CallbackQueryHandler(callback_query_handler))
 
+    logger.info("Bot is running...")
+    application.run_polling()
+
+if __name__ == "__main__":
+    main()
+    
 # Provide your session string here
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
