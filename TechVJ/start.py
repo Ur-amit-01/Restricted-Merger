@@ -69,20 +69,21 @@ async def merge_and_send(client: Client, message: Message):
 
 @Client.on_message(filters.document & filters.private)
 async def handle_pdf(client, message):
-    # Check if the document is a PDF
-    if message.document.mime_type == "application/pdf":
-        await message.reply_text("PDF received. Do you want to add it to the merge list?")
-    else:
-        await message.reply_text("This is not a valid PDF file.")
+    user_id = message.from_user.id  # Get the user's ID
     
+    # Check if the document is a PDF
+    if message.document.mime_type != "application/pdf":
+        await message.reply_text("This is not a valid PDF file.")
+        return
+
     # Ensure the user has initiated the merging process
     if user_id not in user_pdf_collection:
         await message.reply_text(
-            "Use /merge to start merging PDFs before sending any files."
+            "You need to start the merging process first. Use /merge to begin."
         )
         return
-    
-    # Limit to 10 PDFs per user
+
+    # Limit to 20 PDFs per user
     if len(user_pdf_collection[user_id]) >= 20:
         await message.reply_text(
             "You can only upload up to 20 PDFs for merging. Send /done to merge the files."
@@ -90,12 +91,16 @@ async def handle_pdf(client, message):
         return
 
     # Download the PDF file
-    temp_file = await message.download()
-    user_pdf_collection[user_id].append(temp_file)
+    try:
+        temp_file = await message.download()  # Download the file to a temporary location
+        user_pdf_collection[user_id].append(temp_file)  # Add the file path to the user's list
 
-    await message.reply_text(
-        f"PDF {len(user_pdf_collection[user_id])} uploaded successfully. Send more or use /done to merge them."
-    )
+        await message.reply_text(
+            f"PDF {len(user_pdf_collection[user_id])} uploaded successfully. "
+            "Send more PDFs or use /done to merge them."
+        )
+    except Exception as e:
+        await message.reply_text(f"Failed to upload the PDF: {e}")
 
 #✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
 
