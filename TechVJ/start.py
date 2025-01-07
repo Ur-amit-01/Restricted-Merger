@@ -11,55 +11,6 @@ import tempfile
 from pyrogram import filters
 
 
-# Dictionary to store user's PDF collection state
-user_pdf_collection = {}
-
-@Client.on_message(filters.command(["merge"]))
-async def start_pdf_collection(client: Client, message: Message):
-    user_id = message.from_user.id
-    user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
-    await message.reply_text(
-        "Send me the PDFs you want to merge, one by one. When you're done, send /done."
-    )
-
-@Client.on_message(filters.command(["done"]))
-async def merge_and_send(client: Client, message: Message):
-    user_id = message.from_user.id
-    
-    if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
-        await message.reply_text(
-            "You need to send at least 2 PDFs before using /done. Use /merge to start over."
-        )
-        return
-    
-    # Create a temporary file for the merged PDF
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
-        output_file = temp_file.name
-
-    # Merge the PDFs
-    try:
-        merger = PdfMerger()
-        for pdf in user_pdf_collection[user_id]:
-            merger.append(pdf)
-        merger.write(output_file)
-        merger.close()
-        
-        # Send the merged PDF
-        await client.send_document(
-            chat_id=message.chat.id,
-            document=output_file,
-            caption="Here is your merged PDF. ✅",
-            reply_to_message_id=message.id
-        )
-        
-        # Send a confirmation message
-        await message.reply_text("Your PDFs have been successfully merged!")
-    
-    except Exception as e:
-        await message.reply_text(f"Failed to merge PDFs: {e}")
-    
-    finally:
-        # Clean up temporary files
         for pdf in user_pdf_collection[user_id]:
             if os.path.exists(pdf):
                 os.remove(pdf)
@@ -67,8 +18,11 @@ async def merge_and_send(client: Client, message: Message):
         if os.path.exists(output_file):
             os.remove(output_file)
 
+        # Remove the user from pending filename requests
+        pending_filename_requests.pop(user_id, None)
+
 @Client.on_message(filters.document & filters.private)
-async def handle_pdf(client, message):
+async def handle_pdf(client: Client, message: Message):
     user_id = message.from_user.id  # Get the user's ID
     
     # Check if the document is a PDF
@@ -79,7 +33,7 @@ async def handle_pdf(client, message):
     # Ensure the user has initiated the merging process
     if user_id not in user_pdf_collection:
         await message.reply_text(
-            "You need to start the merging process first. Use /merge to begin."
+            "To begin merging your PDFs, please start the process by /merge. 🔄"
         )
         return
 
@@ -89,18 +43,32 @@ async def handle_pdf(client, message):
             "You can only upload up to 20 PDFs for merging. Send /done to merge the files."
         )
         return
-
+        
+    # Check if the file size exceeds the limit
+    if message.document.file_size > MAX_FILE_SIZE:
+        await message.reply_text(
+            "The file is too large. Please send a PDF smaller than 20MB."
+        )
+        return
+        
     # Download the PDF file
     try:
-        temp_file = await message.download()  # Download the file to a temporary location
-        user_pdf_collection[user_id].append(temp_file)  # Add the file path to the user's list
+        # Download the file to a temporary location
+        temp_file = await message.download()  
+        
+        # Extract filename from the downloaded path
+        file_name = os.path.basename(temp_file)
 
+        # Add the file path to the user's list
+        user_pdf_collection[user_id].append(temp_file)
+
+        # Reply with the file number and filename
         await message.reply_text(
-            f"PDF {len(user_pdf_collection[user_id])} uploaded successfully. "
+            f"➥ {len(user_pdf_collection[user_id])}. {file_name} ✅ "
             "Send more PDFs or use /done to merge them."
         )
     except Exception as e:
-        await message.reply_text(f"Failed to upload the PDF: {e}")
+        await message.reply_text(f"❌ Failed to upload the PDF : {e}")
 
 #✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
 
