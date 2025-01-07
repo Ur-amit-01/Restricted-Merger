@@ -90,18 +90,27 @@ async def handle_pdf(client, message):
         )
         return
 
-    # Download the PDF file
-    try:
-        temp_file = await message.download()  # Download the file to a temporary location
-        user_pdf_collection[user_id].append(temp_file)  # Add the file path to the user's list
+# Download the PDF file
+try:
+    # Download the file to a temporary location
+    temp_file = await message.download()  
+    
+    # Extract filename from the downloaded path
+    file_name = os.path.basename(temp_file)
 
-        await message.reply_text(
-            f"PDF {len(user_pdf_collection[user_id])} uploaded successfully. "
-            "Send more PDFs or use /done to merge them."
-        )
-    except Exception as e:
-        await message.reply_text(f"Failed to upload the PDF: {e}")
+    # Add the file path to the user's list
+    if user_id not in user_pdf_collection:
+        user_pdf_collection[user_id] = []
+    user_pdf_collection[user_id].append(temp_file)
 
+    # Reply with the file number and filename
+    await message.reply_text(
+        f"➥ {len(user_pdf_collection[user_id])}. {file_name} ✅ "
+        "Send more PDFs or use /done to merge them."
+    )
+except Exception as e:
+    await message.reply_text(f"❌ Failed to upload the PDF : {e}")
+    
 #✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
 
 # Provide your session string here
