@@ -6,16 +6,14 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, User
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
-
-
-import os
 import subprocess
 import glob
 import logging
 import re
 from collections import Counter
 from os.path import basename
-from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Update
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackContext, CallbackQueryHandler
 from PyPDF2 import PdfMerger, PdfReader
 
