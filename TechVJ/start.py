@@ -8,11 +8,10 @@ from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
 from PyPDF2 import PdfMerger
 import tempfile
-from pyrogram import filters
+from pyrogram import filtes
 
-
-# Dictionary to store user's PDF collection state
 user_pdf_collection = {}
+pending_filename = {}
 
 @Client.on_message(filters.command(["merge"]))
 async def start_pdf_collection(client: Client, message: Message):
@@ -23,7 +22,7 @@ async def start_pdf_collection(client: Client, message: Message):
     )
 
 @Client.on_message(filters.command(["done"]))
-async def merge_and_send(client: Client, message: Message):
+async def ask_for_filename(client: Client, message: Message):
     user_id = message.from_user.id
     
     if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
@@ -32,9 +31,28 @@ async def merge_and_send(client: Client, message: Message):
         )
         return
     
-    # Create a temporary file for the merged PDF
-    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_file:
-        output_file = temp_file.name
+    pending_filename[user_id] = True  # Indicate the bot is waiting for a filename
+    await message.reply_text(
+        "Please reply with the filename (without .pdf) you'd like for the merged PDF."
+    )
+
+@Client.on_message(filters.text & filters.private)
+async def handle_filename(client: Client, message: Message):
+    user_id = message.from_user.id
+
+    # Check if the bot is waiting for a filename
+    if user_id not in pending_filename:
+        return
+
+    filename = message.text.strip()
+    if not filename:
+        await message.reply_text("Invalid filename. Please try again.")
+        return
+
+    pending_filename.pop(user_id, None)  # Remove pending state
+
+    # Create a temporary file with the given filename
+    output_file = f"{filename}.pdf"
 
     # Merge the PDFs
     try:
