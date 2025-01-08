@@ -8,7 +8,7 @@ from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
 from PyPDF2 import PdfMerger
 import tempfile
-from pyrogram import filtes
+from pyrogram import filters
 
 user_pdf_collection = {}
 pending_filename = {}
