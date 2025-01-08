@@ -19,33 +19,6 @@ MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
 # Dictionary to track pending filename requests
 pending_filename_requests = {}
 
-@Client.on_message(filters.command(["merge"]))
-async def start_pdf_collection(client: Client, message: Message):
-    user_id = message.from_user.id
-    user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
-    await message.reply_text(
-        "Now, Send your PDFs 📑 one by one. Use /done ✅ to merge."
-    )
-
-@Client.on_message(filters.command(["done"]))
-async def request_filename(client: Client, message: Message):
-    user_id = message.from_user.id
-
-    # Check if the user has uploaded at least 2 PDFs
-    if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
-        await message.reply_text(
-            "Send at least 2 PDFs 📑 before using /done. Start fresh with /merge 🔄."
-        )
-        return
-
-    # Ask the user for a filename
-    pending_filename_requests[user_id] = True
-    await message.reply_text(
-        "Send the name for your merged PDF 📄 (no extension) ✍️."
-    )
- 
-#✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
-
 # Provide your session string here
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
@@ -165,6 +138,32 @@ async def save(client: Client, message: Message):
 
 # Reuse the handle_private and get_message_type functions from the original code without modification
 
+@Client.on_message(filters.command(["merge"]))
+async def start_pdf_collection(client: Client, message: Message):
+    user_id = message.from_user.id
+    user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
+    await message.reply_text(
+        "Now, Send your PDFs 📑 one by one. Use /done ✅ to merge."
+    )
+
+@Client.on_message(filters.command(["done"]))
+async def request_filename(client: Client, message: Message):
+    user_id = message.from_user.id
+
+    # Check if the user has uploaded at least 2 PDFs
+    if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
+        await message.reply_text(
+            "Send at least 2 PDFs 📑 before using /done. Start fresh with /merge 🔄."
+        )
+        return
+
+    # Ask the user for a filename
+    pending_filename_requests[user_id] = True
+    await message.reply_text(
+        "Send the name for your merged PDF 📄 (no extension) ✍️."
+    )
+ 
+#✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
 # handle private
 async def handle_private(client: Client, acc, message: Message, chatid: int, msgid: int):
     msg: Message = await acc.get_messages(chatid, msgid)
