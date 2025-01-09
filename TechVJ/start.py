@@ -10,8 +10,6 @@ from PyPDF2 import PdfMerger
 import tempfile
 from pyrogram import filters
 
-#✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓✓
-
 # Provide your session string here
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
@@ -129,8 +127,6 @@ async def save(client: Client, message: Message):
         batch_temp.IS_BATCH[message.from_user.id] = True
         await acc.disconnect()
 
-# Reuse the handle_private and get_message_type functions from the original code without modification
-
 # handle private
 async def handle_private(client: Client, acc, message: Message, chatid: int, msgid: int):
     msg: Message = await acc.get_messages(chatid, msgid)
@@ -240,7 +236,6 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         os.remove(file)
     await client.delete_messages(message.chat.id,[smsg.id])
 
-
 # get the type of message
 def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
     try:
@@ -290,89 +285,5 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
         return "Text"
     except:
         pass
-        
 
-@Client.on_message(filters.text & filters.private)
-async def handle_filename(client: Client, message: Message):
-    user_id = message.from_user.id
-
-    # Check if the bot is waiting for a filename
-    if user_id not in pending_filename:
-        return
-
-    filename = message.text.strip()
-    if not filename:
-        await message.reply_text("Invalid filename. Please try again.")
-        return
-
-    pending_filename.pop(user_id, None)  # Remove pending state
-
-    # Create a temporary file with the given filename
-    output_file = f"{filename}.pdf"
-
-    # Merge the PDFs
-    try:
-        merger = PdfMerger()
-        for pdf in user_pdf_collection[user_id]:
-            merger.append(pdf)
-        merger.write(output_file)
-        merger.close()
-        
-        # Send the merged PDF
-        await client.send_document(
-            chat_id=message.chat.id,
-            document=output_file,
-            caption="Here is your merged PDF. ✅",
-            reply_to_message_id=message.id
-        )
-        
-        # Send a confirmation message
-        await message.reply_text("Your PDFs have been successfully merged!")
-    
-    except Exception as e:
-        await message.reply_text(f"Failed to merge PDFs: {e}")
-    
-    finally:
-        # Clean up temporary files
-        for pdf in user_pdf_collection[user_id]:
-            if os.path.exists(pdf):
-                os.remove(pdf)
-        user_pdf_collection.pop(user_id, None)
-        if os.path.exists(output_file):
-            os.remove(output_file)
-
-@Client.on_message(filters.document & filters.private)
-async def handle_pdf(client, message):
-    user_id = message.from_user.id  # Get the user's ID
-    
-    # Check if the document is a PDF
-    if message.document.mime_type != "application/pdf":
-        await message.reply_text("This is not a valid PDF file.")
-        return
-
-    # Ensure the user has initiated the merging process
-    if user_id not in user_pdf_collection:
-        await message.reply_text(
-            "You need to start the merging process first. Use /merge to begin."
-        )
-        return
-
-    # Limit to 20 PDFs per user
-    if len(user_pdf_collection[user_id]) >= 20:
-        await message.reply_text(
-            "You can only upload up to 20 PDFs for merging. Send /done to merge the files."
-        )
-        return
-
-    # Download the PDF file
-    try:
-        temp_file = await message.download()  # Download the file to a temporary location
-        user_pdf_collection[user_id].append(temp_file)  # Add the file path to the user's list
-
-        await message.reply_text(
-            f"PDF {len(user_pdf_collection[user_id])} uploaded successfully. "
-            "Send more PDFs or use /done to merge them."
-        )
-    except Exception as e:
-        await message.reply_text(f"Failed to upload the PDF: {e}")
 
