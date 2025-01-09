@@ -10,6 +10,7 @@ pending_filename = {}
 
 @Client.on_message(filters.command(["merge"]))
 async def start_pdf_collection(client: Client, message: Message):
+    print("PDF merge command triggered")  # Debug log
     user_id = message.from_user.id
     user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
     await message.reply_text(
@@ -18,6 +19,7 @@ async def start_pdf_collection(client: Client, message: Message):
 
 @Client.on_message(filters.command(["done"]))
 async def ask_for_filename(client: Client, message: Message):
+    print("done command triggered")  # Debug log
     user_id = message.from_user.id
     
     if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
