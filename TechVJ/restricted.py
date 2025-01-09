@@ -49,13 +49,16 @@ def progress(current, total, message, type):
 
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
-    logger.info(f"/cancel command triggered by user {message.from_user.id}")
-    batch_temp.IS_BATCH[message.from_user.id] = True
+    user_id = message.from_user.id
+    logger.info(f"/cancel command triggered by user {user_id}")
+    if user_id not in batch_temp.IS_BATCH:
+        batch_temp.IS_BATCH[user_id] = True  # Initialize as True (not processing)
+    batch_temp.IS_BATCH[user_id] = True
     await client.send_message(
         chat_id=message.chat.id,
         text="**Batch Successfully Cancelled.**"
     )
-
+    
 @Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
     if "https://t.me/" in message.text:
