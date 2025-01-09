@@ -6,11 +6,7 @@ from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, User
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
-from PyPDF2 import PdfMerger
-import tempfile
-from pyrogram import filters
 
-# Provide your session string here
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 class batch_temp(object):
