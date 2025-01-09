@@ -14,12 +14,27 @@ logger = logging.getLogger(__name__)
 # PDF inversion function
 async def invert_pdf(input_file, output_file):
     try:
+        # Open the PDF
         pdf_document = fitz.open(input_file)
+        logger.info(f"Opened PDF: {input_file}")
+        
+        # Check if the PDF has pages
+        if len(pdf_document) == 0:
+            return "The PDF is empty. No pages found."
+
+        # Process each page
         for page_num in range(len(pdf_document)):
             page = pdf_document[page_num]
-            # Get the page's pixmap (image representation)
+            logger.info(f"Inverting page {page_num + 1}")
+            
+            # Try to get a pixmap (image representation) of the page
             pix = page.get_pixmap()
             
+            # Check if the pixmap is valid
+            if not pix:
+                logger.warning(f"No image found on page {page_num + 1}")
+                continue
+
             # Convert Pixmap to a PIL Image
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
 
@@ -38,7 +53,9 @@ async def invert_pdf(input_file, output_file):
         # Save the inverted PDF
         pdf_document.save(output_file)
         pdf_document.close()
+        logger.info(f"PDF saved successfully: {output_file}")
     except Exception as e:
+        logger.error(f"Error inverting PDF: {e}")
         return str(e)
     return None
 
