@@ -36,7 +36,7 @@ async def ask_for_filename(client: Client, message: Message):
         "Please reply with the filename (without .pdf) you'd like for the merged PDF."
     )
 
-@Client.on_message(filters.text & filters.private)
+@Client.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
 async def handle_filename(client: Client, message: Message):
     user_id = message.from_user.id
 
