@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, InputMedi
 import time
 
 # Start command handler
-@client.on_message(filters.command("start"))
+@Client.on_message(filters.command("start"))
 async def send_welcome(client, message):
     # Send a sticker first
     sticker_id = 'CAACAgUAAxkBAAECEpdnLcqQbmvQfCMf5E3rBK2dkgzqiAACJBMAAts8yFf1hVr67KQJnh4E'
@@ -29,7 +29,7 @@ async def send_welcome(client, message):
     )
 
 # Callback query handler
-@client.on_callback_query(filters.regex("^(help|about|back)$"))
+@Client.on_callback_query(filters.regex("^(help|about|back)$"))
 async def callback_handler(client, callback_query):
     # Define media and caption based on the button clicked
     if callback_query.data == "help":
@@ -71,7 +71,7 @@ ABOUT_TXT = """<b><blockquote>⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
 ‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : ᴠ2.7.1 [sᴛᴀʙʟᴇ]</b>"""
 
 # Help command handler
-@client.on_message(filters.command("help"))
+@Client.on_message(filters.command("help"))
 async def send_help(client, message):
     help_text = "1. Send me PDF files you want to merge.\n"
     help_text += "2. Use /merge to combine the files into one PDF.\n"
