@@ -1,3 +1,9 @@
+import os
+import asyncio
+from pyrogram import Client, filters
+from PyPDF2 import PdfMerger
+from pyrogram.types import Message
+import tempfile
 
 user_pdf_collection = {}
 pending_filename = {}
