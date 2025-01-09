@@ -33,49 +33,15 @@ user_pdf_collection = {}
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
 pending_filename_requests = {}
 
+# Keep track of user states
+user_states = {}
+
 # Handle /invert command
 @Client.on_message(filters.command(["invert"]) & filters.private)
 async def handle_invert_command(client: Client, message: Message):
     logger.info(f"/invert command triggered by user {message.from_user.id}")
+    user_states[message.from_user.id] = 'invert'  # Set user state to 'invert'
     await message.reply_text("Send me a PDF to invert its colors (positive to negative).")
-
-# Handle PDF inversion process
-@Client.on_message(filters.document & filters.private)
-async def handle_pdf_inversion(client: Client, message: Message):
-    if message.document.mime_type != "application/pdf":
-        await message.reply_text("This is not a valid PDF file. Please send a PDF.")
-        return
-
-    # Check if this is a valid inversion process (not part of the merge flow)
-    if message.chat.id not in user_pdf_collection:
-        # Inversion process
-        await message.reply_text("Inversion process started! Please wait while I convert your PDF to a negative version...")
-
-        try:
-            temp_input = await message.download()
-            temp_output = f"negative_{os.path.basename(temp_input)}"
-
-            # Invert the PDF colors
-            error = await invert_pdf(temp_input, temp_output)
-            if error:
-                await message.reply_text(f"Failed to invert PDF: {error}")
-                return
-
-            # Send the inverted PDF back to the user
-            await client.send_document(
-                chat_id=message.chat.id,
-                document=temp_output,
-                caption="Here is your inverted PDF! ✅",
-                reply_to_message_id=message.id
-            )
-
-            # Clean up temporary files
-            os.remove(temp_input)
-            os.remove(temp_output)
-
-        except Exception as e:
-            await message.reply_text(f"An error occurred: {e}")
-        return  # Exit after processing inversion
 
 # Handle /merge command
 @Client.on_message(filters.command(["merge"]))
@@ -83,6 +49,7 @@ async def start_pdf_collection(client: Client, message: Message):
     logger.info(f"/merge command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
     user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
+    user_states[user_id] = 'merge'  # Set user state to 'merge'
     await message.reply_text(
         "Now, Send your PDFs 📑 one by one. Use /done ✅ to merge."
     )
@@ -157,43 +124,72 @@ async def handle_filename(client: Client, message: Message):
 
         pending_filename_requests.pop(user_id, None)
 
-# Handle PDF uploads (for merging)
+# Handle PDF uploads (for merging or inversion)
 @Client.on_message(filters.document & filters.private)
 async def handle_pdf(client: Client, message: Message):
     user_id = message.from_user.id  # Get the user's ID
 
-    # Avoid conflict by checking if the user is currently in the merging flow
     if message.document.mime_type != "application/pdf":
         await message.reply_text("This is not a valid PDF file.")
         return
 
-    if user_id not in user_pdf_collection:
-        await message.reply_text(
-            "To begin merging your PDFs, please start the process by /merge. 🔄"
-        )
+    # Handle based on user state
+    if user_id not in user_states:
         return
 
-    if len(user_pdf_collection[user_id]) >= 20:
-        await message.reply_text(
-            "You can only upload up to 20 PDFs for merging. Send /done to merge the files."
-        )
-        return
-        
-    if message.document.file_size > MAX_FILE_SIZE:
-        await message.reply_text(
-            "The file is too large. Please send a PDF smaller than 20MB."
-        )
-        return
-        
-    try:
-        temp_file = await message.download()  
-        file_name = os.path.basename(temp_file)
-        user_pdf_collection[user_id].append(temp_file)
+    if user_states[user_id] == 'invert':
+        # Inversion process
+        await message.reply_text("Inversion process started! Please wait while I convert your PDF to a negative version...")
 
-        await message.reply_text(
-            f"➥ {len(user_pdf_collection[user_id])}. {file_name} ✅ "
-            "Send more PDFs or use /done to merge them."
-        )
-    except Exception as e:
-        await message.reply_text(f"❌ Failed to upload the PDF : {e}")
+        try:
+            temp_input = await message.download()
+            temp_output = f"negative_{os.path.basename(temp_input)}"
+
+            # Invert the PDF colors
+            error = await invert_pdf(temp_input, temp_output)
+            if error:
+                await message.reply_text(f"Failed to invert PDF: {error}")
+                return
+
+            # Send the inverted PDF back to the user
+            await client.send_document(
+                chat_id=message.chat.id,
+                document=temp_output,
+                caption="Here is your inverted PDF! ✅",
+                reply_to_message_id=message.id
+            )
+
+            # Clean up temporary files
+            os.remove(temp_input)
+            os.remove(temp_output)
+
+        except Exception as e:
+            await message.reply_text(f"An error occurred: {e}")
+        return  # Exit after processing inversion
+
+    elif user_states[user_id] == 'merge':
+        # Merge PDFs process
+        if len(user_pdf_collection[user_id]) >= 20:
+            await message.reply_text(
+                "You can only upload up to 20 PDFs for merging. Send /done to merge the files."
+            )
+            return
         
+        if message.document.file_size > MAX_FILE_SIZE:
+            await message.reply_text(
+                "The file is too large. Please send a PDF smaller than 20MB."
+            )
+            return
+        
+        try:
+            temp_file = await message.download()  
+            file_name = os.path.basename(temp_file)
+            user_pdf_collection[user_id].append(temp_file)
+
+            await message.reply_text(
+                f"➥ {len(user_pdf_collection[user_id])}. {file_name} ✅ "
+                "Send more PDFs or use /done to merge them."
+            )
+        except Exception as e:
+            await message.reply_text(f"❌ Failed to upload the PDF : {e}")
+
