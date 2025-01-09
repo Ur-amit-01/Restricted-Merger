@@ -6,7 +6,6 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
-from TechVJ.strings import HELP_TXT
 
 logger = logging.getLogger(__name__)
     
@@ -48,25 +47,6 @@ def progress(current, total, message, type):
     with open(f'{message.id}{type}status.txt', "w") as fileup:
         fileup.write(f"{current * 100 / total:.1f}%")
 
-@Client.on_message(filters.command(["start"]))
-async def send_start(client: Client, message: Message):
-    logger.info(f"/start command triggered by user {message.from_user.id}")
-    await client.send_message(
-        chat_id=message.chat.id,
-        text=f"<b>👋 Hi {message.from_user.mention}, I am Save Restricted Content Bot. I can send you restricted content by its post link.\n\nKnow how to use bot by - /help</b>\n\n> **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**",
-        reply_to_message_id=message.id,
-        disable_web_page_preview=True
-    )
-
-@Client.on_message(filters.command(["help"]))
-async def send_help(client: Client, message: Message):
-    logger.info(f"/help command triggered by user {message.from_user.id}")
-    await client.send_message(
-        chat_id=message.chat.id,
-        text=f"{HELP_TXT}",
-        disable_web_page_preview=True
-    )
-
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
@@ -75,7 +55,6 @@ async def send_cancel(client: Client, message: Message):
         chat_id=message.chat.id,
         text="**Batch Successfully Cancelled.**"
     )
-
 
 @Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
