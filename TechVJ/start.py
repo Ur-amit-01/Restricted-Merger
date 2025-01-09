@@ -53,7 +53,15 @@ async def send_start(client: Client, message: Message):
     logger.info(f"/start command triggered by user {message.from_user.id}")
     await client.send_message(
         chat_id=message.chat.id,
-        text=f"<b>👋 Hi {message.from_user.mention}, I am Save Restricted Content Bot. I can send you restricted content by its post link.\n\nKnow how to use bot by - /help</b>\n\n> **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**",
+        text=(
+            "<b>✨👋 Hey {mention}, Welcome!</b>\n\n"
+            "<i>I am a powerful bot designed to assist you effortlessly.</i>\n"
+            "<b>• Here’s what I can do for you: 🤖</b>\n\n"
+            "📌 <b>Send restricted content by its post link.</b>\n"
+            "📌 <b>Merge multiple PDFs into a single file.</b>\n\n"
+            "⚙️ <b>Need help ?? use /help</b>\n\n"
+            "> **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**"
+        ).format(mention=message.from_user.mention),
         disable_web_page_preview=True
     )
 
