@@ -56,7 +56,7 @@ async def send_start(client: Client, message: Message):
         text=(
             "<b>✨👋 Hey {mention}, Welcome!</b>\n"
             "<i>I am a powerful bot designed to assist you effortlessly.</i>\n\n"
-            ">**• Here’s what I can do for you: 👇🏻🤖**\n\n"
+            "> **Here’s what I can do for you: 👇🏻🤖**\n\n"
             "📌 <b>Send restricted content by its post link.</b>\n"
             "📌 <b>Merge multiple PDFs into a single file.</b>\n\n"
             "⚙️ <b>Need help ?? use /help</b>\n\n"
