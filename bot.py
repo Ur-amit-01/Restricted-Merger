@@ -1,12 +1,15 @@
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
+import logging
 from pyrogram import Client
 from config import API_ID, API_HASH, BOT_TOKEN
 
-class Bot(Client):
+# Configure logging
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
 
+class Bot(Client):
     def __init__(self):
         super().__init__(
             "techvj login",
@@ -18,19 +21,12 @@ class Bot(Client):
             sleep_threshold=10
         )
 
-      
     async def start(self):
-            
         await super().start()
-        print('Bot Started Powered By @VJ_Botz')
+        logger.info("Bot Started Powered By @VJ_Botz")
 
     async def stop(self, *args):
-
         await super().stop()
-        print('Bot Stopped Bye')
+        logger.info("Bot Stopped Bye")
 
 Bot().run()
-
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
