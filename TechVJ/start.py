@@ -77,7 +77,7 @@ async def send_cancel(client: Client, message: Message):
     )
 
 
-@Client.on_message(filters.text & filters.private)
+@Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
     if "https://t.me/" in message.text:
         if batch_temp.IS_BATCH.get(message.from_user.id) == False:
