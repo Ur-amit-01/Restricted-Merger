@@ -11,7 +11,7 @@ pending_filename = {}
 
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.command(["merge"]))
+@Client.on_message(filters.command(["merge"]) & filters.private)
 async def start_pdf_collection(client: Client, message: Message):
     logger.info(f"/merge command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
@@ -20,7 +20,7 @@ async def start_pdf_collection(client: Client, message: Message):
         "Send me the PDFs you want to merge, one by one. When you're done, send /done."
     )
 
-@Client.on_message(filters.command(["done"]))
+@Client.on_message(filters.command(["done"]) & filters.private)
 async def ask_for_filename(client: Client, message: Message):
     logger.info(f"/done command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
