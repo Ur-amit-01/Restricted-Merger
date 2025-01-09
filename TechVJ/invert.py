@@ -4,6 +4,8 @@ import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
+logger = logging.getLogger(__name__)
+
 async def invert_pdf(input_file, output_file):
     try:
         pdf_document = fitz.open(input_file)
@@ -24,6 +26,7 @@ async def invert_pdf(input_file, output_file):
 
 @Client.on_message(filters.command(["invert"]) & filters.private)
 async def handle_invert_command(client: Client, message: Message):
+    logger.info(f"/invert command triggered by user {message.from_user.id}")
     await message.reply_text("Send me a PDF to invert its colors (positive to negative).")
 
 @Client.on_message(filters.document & filters.private)
