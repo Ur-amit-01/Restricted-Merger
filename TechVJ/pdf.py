@@ -1,10 +1,12 @@
 import fitz  # PyMuPDF
-import logging 
+import logging
 import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from PyPDF2 import PdfMerger
 import tempfile
+from PIL import Image
+import io
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -17,10 +19,22 @@ async def invert_pdf(input_file, output_file):
             page = pdf_document[page_num]
             # Get the page's pixmap (image representation)
             pix = page.get_pixmap()
-            # Invert colors
-            inverted_pix = pix.invert_()
-            # Save the inverted pixmap back to the page
+            
+            # Convert Pixmap to a PIL Image
+            img = Image.open(io.BytesIO(pix.tobytes()))
+
+            # Invert the image colors using PIL
+            inverted_img = Image.eval(img, lambda x: 255 - x)
+
+            # Save the inverted image back as a pixmap
+            img_byte_arr = io.BytesIO()
+            inverted_img.save(img_byte_arr, format='PNG')
+            img_byte_arr.seek(0)
+            inverted_pix = fitz.Pixmap(fitz.csRGB, Image.open(img_byte_arr))
+
+            # Insert the inverted image back into the page
             page.insert_image(page.rect, pixmap=inverted_pix)
+
         # Save the inverted PDF
         pdf_document.save(output_file)
         pdf_document.close()
@@ -192,4 +206,3 @@ async def handle_pdf(client: Client, message: Message):
             )
         except Exception as e:
             await message.reply_text(f"❌ Failed to upload the PDF : {e}")
-
