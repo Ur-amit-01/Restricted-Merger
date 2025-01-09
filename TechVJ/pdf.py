@@ -1,4 +1,5 @@
 import os
+import logging   
 import asyncio
 from pyrogram import Client, filters
 from PyPDF2 import PdfMerger
@@ -8,9 +9,11 @@ import tempfile
 user_pdf_collection = {}
 pending_filename = {}
 
+logger = logging.getLogger(__name__)
+
 @Client.on_message(filters.command(["merge"]))
 async def start_pdf_collection(client: Client, message: Message):
-    print("PDF merge command triggered")  # Debug log
+    logger.info(f"/merge command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
     user_pdf_collection[user_id] = []  # Initialize an empty list for storing PDF files
     await message.reply_text(
@@ -19,7 +22,7 @@ async def start_pdf_collection(client: Client, message: Message):
 
 @Client.on_message(filters.command(["done"]))
 async def ask_for_filename(client: Client, message: Message):
-    print("done command triggered")  # Debug log
+    logger.info(f"/done command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
     
     if user_id not in user_pdf_collection or len(user_pdf_collection[user_id]) < 2:
