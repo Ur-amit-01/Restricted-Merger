@@ -52,7 +52,7 @@ async def send_cancel(client: Client, message: Message):
     user_id = message.from_user.id
     logger.info(f"/cancel command triggered by user {user_id}")
     
-    if not batch_temp.IS_BATCH.get(user_id, True):
+    if not batch_temp.IS_BATCH.get(user_id, True):  # Check if the task is running
         batch_temp.IS_BATCH[user_id] = True  # Cancel the task
         await client.send_message(
             chat_id=message.chat.id,
@@ -64,11 +64,12 @@ async def send_cancel(client: Client, message: Message):
             text="No ongoing task to cancel."
         )
 
+
 @Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
     user_id = message.from_user.id
 
-    # Check for existing task
+    # Check if a task is already running
     if batch_temp.IS_BATCH.get(user_id) == False:
         return await message.reply_text(
             "**One task is already processing. Use /cancel to terminate the current task.**"
@@ -88,10 +89,10 @@ async def save(client: Client, message: Message):
         await acc.connect()
 
         for msgid in range(fromID, toID + 1):
-            # Check cancellation status frequently
-            if batch_temp.IS_BATCH.get(user_id):
+            # Check cancellation status frequently during the loop
+            if batch_temp.IS_BATCH.get(user_id, True):
                 await message.reply_text("Task was canceled.")
-                break
+                break  # Break the loop if canceled
 
             if "https://t.me/c/" in message.text:
                 chatid = int("-100" + datas[4])
@@ -118,14 +119,14 @@ async def save(client: Client, message: Message):
 
             await asyncio.sleep(1)  # Check more frequently if cancellation occurs
 
-        if not batch_temp.IS_BATCH.get(user_id):
+        if batch_temp.IS_BATCH.get(user_id) == False:  # Task completed successfully
             await message.reply_text("Batch processing completed.")
     except Exception as e:
         logger.error(f"Error in save function: {e}")
         await message.reply_text(f"An error occurred: {e}")
     finally:
-        # Reset the user's task status
-        batch_temp.IS_BATCH[user_id] = None
+        # Reset the user's task status when done
+        batch_temp.IS_BATCH[user_id] = True  # Set it back to True when task ends (successful or canceled)
         await acc.disconnect()
 
 # handle private
