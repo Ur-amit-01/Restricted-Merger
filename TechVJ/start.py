@@ -26,7 +26,7 @@ async def downstatus(client, statusfile, message, chat):
         with open(statusfile, "r") as downread:
             txt = downread.read()
         try:
-            await client.edit_message_text(chat, message.id, f"**Downloading 📥** \n\n**{txt}**")
+            await client.edit_message_text(chat, message.id, f"> **Downloading 📥** \n\n**{txt}**")
             await asyncio.sleep(2)
         except:
             await asyncio.sleep(2)
@@ -40,26 +40,28 @@ async def upstatus(client, statusfile, message, chat):
         with open(statusfile, "r") as upread:
             txt = upread.read()
         try:
-            await client.edit_message_text(chat, message.id, f"**Uploading 📤** \n\n**{txt}**")
+            await client.edit_message_text(chat, message.id, f"> **Uploading 📤** \n\n**{txt}**")
             await asyncio.sleep(2)
         except:
             await asyncio.sleep(2)
 
 async def progress(current, total, message, type):
     try:
+        # Initialize or reset the start time for each task
+        if not hasattr(progress, "start_time") or progress.task_type != type:
+            progress.start_time = time.time()
+            progress.task_type = type  # Keep track of the current task type
+
+        # Calculate elapsed time
+        elapsed_time = time.time() - progress.start_time  # Elapsed time in seconds
+
         # Calculate percentage progress
         percent = current * 100 / total
         processed = current / (1024 * 1024)  # Processed in MB
         total_size = total / (1024 * 1024)  # Total size in MB
         
         # Calculate the download/upload speed in MB/s
-        if hasattr(progress, "start_time"):
-            elapsed_time = time.time() - progress.start_time  # Elapsed time in seconds
-            speed = current / elapsed_time / (1024 * 1024)  # Speed in MB/s
-        else:
-            progress.start_time = time.time()
-            elapsed_time = 0
-            speed = 0
+        speed = current / elapsed_time / (1024 * 1024) if elapsed_time > 0 else 0
 
         # Format the elapsed time in a readable format (hours, minutes, seconds)
         hours, remainder = divmod(int(elapsed_time), 3600)
@@ -68,16 +70,16 @@ async def progress(current, total, message, type):
         
         # Update progress message in file
         with open(f'{message.id}{type}status.txt', "w") as fileup:
-            fileup.write(f"**📊 Progress**: {percent:.1f}%\n"
-                         f"**📦 Processed**: {processed:.2f}MB of {total_size:.2f}MB\n"
-                         f"**⚡ Speed**: {speed:.2f} MB/s\n"
-                         f"**⏱️ Time Elapsed**: {formatted_time}")
+            fileup.write(f"> **📊 Progress**: {percent:.1f}%\n"
+                         f"> **📦 Processed**: {processed:.2f}MB of {total_size:.2f}MB\n"
+                         f"> **⚡ Speed**: {speed:.2f} MB/s\n"
+                         f"> **⏱️ Time Elapsed**: {formatted_time}")
         
         # Update the message with the progress
         if percent % 5 == 0:  # Update every 5% for smoother experience
             try:
                 await message.edit_text(
-                    f"**🚀 Download Progress:**\n"
+                    f"**🚀 Task Progress:**\n"
                     f"📊 Progress: {percent:.1f}%\n"
                     f"📦 Processed: {processed:.2f}MB of {total_size:.2f}MB\n"
                     f"⚡ Speed: {speed:.2f} MB/s\n"
