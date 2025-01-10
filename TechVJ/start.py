@@ -45,7 +45,7 @@ async def upstatus(client, statusfile, message, chat):
         except:
             await asyncio.sleep(5)
 
-def progress(current, total, message, type):
+async def progress(current, total, message, type):
     try:
         # Calculate percentage progress
         percent = current * 100 / total
@@ -71,7 +71,7 @@ def progress(current, total, message, type):
         minutes, seconds = divmod(remainder, 60)
         formatted_time = f"{hours}h {minutes}m {seconds}s" if hours else f"{minutes}m {seconds}s"
         
-        # Update progress message
+        # Update progress message in file
         with open(f'{message.id}{type}status.txt', "w") as fileup:
             fileup.write(f"**Progress**: {percent:.1f}%\n"
                          f"**Processed**: {processed:.2f} MB\n"
@@ -91,11 +91,12 @@ def progress(current, total, message, type):
                     f"Time Left: {formatted_time}"
                 )
             except Exception as e:
-                # In case of any errors, we just log them and continue
+                # In case of any errors, log them
                 logger.error(f"Error updating message: {e}")
         
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
+        
 
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
