@@ -94,14 +94,10 @@ async def merge_files(client: Client, message: Message):
         )
         return
 
-    progress_message = await message.reply_text(
-        "🛠️ Merging your files... Please wait... 🔄"
-    )
-    
     await message.reply_text(
         "✍️ Type a name for your merged PDF 📄 (without extension)."
     )
-    pending_filename_requests[user_id] = {"message": progress_message, "filename_request": True}
+    pending_filename_requests[user_id] = {"filename_request": True}
 
 @Client.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
 async def handle_filename(client: Client, message: Message):
@@ -122,7 +118,11 @@ async def handle_filename(client: Client, message: Message):
         await message.reply_text("❌ Invalid filename. Please try again.")
         return
 
-    progress_message = pending_filename_requests[user_id]["message"]
+    # Send progress message after the filename is received
+    progress_message = await message.reply_text(
+        "🛠️ Merging your files... Please wait... 🔄"
+    )
+    
     try:
         # Use a NamedTemporaryFile for the output PDF
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
@@ -130,7 +130,7 @@ async def handle_filename(client: Client, message: Message):
 
         # Merge PDFs and images asynchronously
         merger = PdfMerger()
-        
+
         # Merge PDF files
         for pdf_index, pdf in enumerate(user_file_collection[user_id]["pdfs"], start=1):
             merger.append(pdf)
