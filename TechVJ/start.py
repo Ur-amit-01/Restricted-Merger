@@ -17,52 +17,43 @@ class batch_temp(object):
     IS_BATCH = {}
 
 async def downstatus(client, statusfile, message, chat):
-    while True:
-        if os.path.exists(statusfile):
-            break
-        await asyncio.sleep(3)
-
     while os.path.exists(statusfile):
         with open(statusfile, "r") as downread:
             txt = downread.read()
         try:
             await client.edit_message_text(chat, message.id, f"**Downloading 📥** \n\n**{txt}**")
-            await asyncio.sleep(10)
+            await asyncio.sleep(3)  # Update every 3 seconds
         except:
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)  # Reduced sleep time for faster retries
 
 async def upstatus(client, statusfile, message, chat):
-    while True:
-        if os.path.exists(statusfile):
-            break
-        await asyncio.sleep(3)
     while os.path.exists(statusfile):
         with open(statusfile, "r") as upread:
             txt = upread.read()
         try:
             await client.edit_message_text(chat, message.id, f"**Uploading 📤** \n\n**{txt}**")
-            await asyncio.sleep(10)
+            await asyncio.sleep(3)  # Update every 3 seconds
         except:
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)  # Reduced sleep time for faster retries
 
 async def progress(current, total, message, type):
     try:
         # Calculate percentage progress
         percent = current * 100 / total
         processed = current / (1024 * 1024)
-        remaining = (total - current) / (1024 * 1024)
+        total_size = total / (1024 * 1024)  # Total size in MB
         
-        # Calculate the download/upload speed in KB/s
+        # Calculate the download/upload speed in MB/s
         if hasattr(progress, "start_time"):
             elapsed_time = time.time() - progress.start_time
-            speed = current / elapsed_time / 1024  # Speed in KB/s
+            speed = current / elapsed_time / (1024 * 1024)  # Speed in MB/s
         else:
             progress.start_time = time.time()
             speed = 0
 
         # Estimate remaining time (in seconds)
         if speed > 0:
-            remaining_time = (total - current) / (speed * 1024)  # Remaining time in seconds
+            remaining_time = (total - current) / (speed * 1024 * 1024)  # Remaining time in seconds
         else:
             remaining_time = 0
 
@@ -73,22 +64,20 @@ async def progress(current, total, message, type):
         
         # Update progress message in file
         with open(f'{message.id}{type}status.txt', "w") as fileup:
-            fileup.write(f"**Progress**: {percent:.1f}%\n"
-                         f"**Processed**: {processed:.2f} MB\n"
-                         f"**Remaining**: {remaining:.2f} MB\n"
-                         f"**Speed**: {speed:.2f} KB/s\n"
-                         f"**Estimated Time Left**: {formatted_time}")
+            fileup.write(f"**📊 Progress**: {percent:.1f}%\n"
+                         f"**📦 Processed: {processed:.2f}MB of {total_size:.2f}MB\n"
+                         f"**⚡ Speed**: {speed:.2f} MB/s\n"
+                         f"**⏳ Time Left**: {formatted_time}")
         
         # Update the message with the progress
         if percent % 5 == 0:  # Update every 5% for smoother experience
             try:
                 await message.edit_text(
-                    f"**Download Progress:**\n"
-                    f"Progress: {percent:.1f}%\n"
-                    f"Processed: {processed:.2f} MB\n"
-                    f"Remaining: {remaining:.2f} MB\n"
-                    f"Speed: {speed:.2f} KB/s\n"
-                    f"Time Left: {formatted_time}"
+                    f"**🚀 Download Progress:**\n"
+                    f"📊 Progress: {percent:.1f}%\n"
+                    f"📦 Processed: {processed:.2f}MB of {total_size:.2f}MB\n"
+                    f"⚡ Speed: {speed:.2f} MB/s\n"
+                    f"⏳ Time Left: {formatted_time}"
                 )
             except Exception as e:
                 # In case of any errors, log them
@@ -96,6 +85,7 @@ async def progress(current, total, message, type):
         
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
+        
         
 
 @Client.on_message(filters.command(["start"]))
