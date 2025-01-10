@@ -49,38 +49,50 @@ def progress(current, total, message, type):
 
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
-    logger.info(f"/cancel command triggered by user {message.from_user.id}")
-    batch_temp.IS_BATCH[message.from_user.id] = True
-    await client.send_message(
-        chat_id=message.chat.id,
-        text="**Batch Successfully Cancelled.**"
-    )
+    user_id = message.from_user.id
+    logger.info(f"/cancel command triggered by user {user_id}")
+    
+    if not batch_temp.IS_BATCH.get(user_id, True):
+        batch_temp.IS_BATCH[user_id] = True  # Cancel the task
+        await client.send_message(
+            chat_id=message.chat.id,
+            text="**Batch task successfully canceled.**"
+        )
+    else:
+        await client.send_message(
+            chat_id=message.chat.id,
+            text="No ongoing task to cancel."
+        )
 
 @Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
-    if "https://t.me/" in message.text:
-        if batch_temp.IS_BATCH.get(message.from_user.id) == False:
-            return await message.reply_text("**One Task Is Already Processing. Wait For It To Complete. If You Want To Cancel This Task Then Use - /cancel**")
+    user_id = message.from_user.id
 
+    # Check for existing task
+    if batch_temp.IS_BATCH.get(user_id) == False:
+        return await message.reply_text(
+            "**One task is already processing. Use /cancel to terminate the current task.**"
+        )
+
+    # Initialize or set task as running
+    batch_temp.IS_BATCH[user_id] = False
+
+    try:
         datas = message.text.split("/")
         temp = datas[-1].replace("?single", "").split("-")
         fromID = int(temp[0].strip())
-        try:
-            toID = int(temp[1].strip())
-        except:
-            toID = fromID
+        toID = int(temp[1].strip()) if len(temp) > 1 else fromID
 
-        batch_temp.IS_BATCH[message.from_user.id] = False
-
-        # Connect using the session string
+        # Connect using session string
         acc = Client("manual_session", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
         await acc.connect()
 
         for msgid in range(fromID, toID + 1):
-            if batch_temp.IS_BATCH.get(message.from_user.id):
+            # Check cancellation status frequently
+            if batch_temp.IS_BATCH.get(user_id):
+                await message.reply_text("Task was canceled.")
                 break
 
-            # Handle private chats
             if "https://t.me/c/" in message.text:
                 chatid = int("-100" + datas[4])
                 try:
@@ -88,14 +100,14 @@ async def save(client: Client, message: Message):
                 except Exception as e:
                     if ERROR_MESSAGE:
                         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
-
-            # Handle public chats
             else:
                 username = datas[3]
                 try:
                     msg = await client.get_messages(username, msgid)
                 except UsernameNotOccupied:
-                    await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
+                    await client.send_message(
+                        message.chat.id, "The username is not occupied by anyone.", reply_to_message_id=message.id
+                    )
                     return
 
                 try:
@@ -104,8 +116,16 @@ async def save(client: Client, message: Message):
                     if ERROR_MESSAGE:
                         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
-            await asyncio.sleep(1)
-        batch_temp.IS_BATCH[message.from_user.id] = True
+            await asyncio.sleep(1)  # Check more frequently if cancellation occurs
+
+        if not batch_temp.IS_BATCH.get(user_id):
+            await message.reply_text("Batch processing completed.")
+    except Exception as e:
+        logger.error(f"Error in save function: {e}")
+        await message.reply_text(f"An error occurred: {e}")
+    finally:
+        # Reset the user's task status
+        batch_temp.IS_BATCH[user_id] = None
         await acc.disconnect()
 
 # handle private
