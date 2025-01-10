@@ -94,16 +94,20 @@ async def merge_files(client: Client, message: Message):
         )
         return
 
+    progress_message = await message.reply_text(
+        "🛠️ Merging your files... Please wait... 🔄"
+    )
+    
     await message.reply_text(
         "✍️ Type a name for your merged PDF 📄 (without extension)."
     )
-    pending_filename_requests[user_id] = True
+    pending_filename_requests[user_id] = {"message": progress_message, "filename_request": True}
 
 @Client.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
 async def handle_filename(client: Client, message: Message):
     user_id = message.from_user.id
 
-    if user_id not in pending_filename_requests:
+    if user_id not in pending_filename_requests or not pending_filename_requests[user_id]["filename_request"]:
         return  
 
     custom_filename = message.text.strip()
@@ -118,6 +122,7 @@ async def handle_filename(client: Client, message: Message):
         await message.reply_text("❌ Invalid filename. Please try again.")
         return
 
+    progress_message = pending_filename_requests[user_id]["message"]
     try:
         # Use a NamedTemporaryFile for the output PDF
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
@@ -129,12 +134,12 @@ async def handle_filename(client: Client, message: Message):
         # Merge PDF files
         for pdf_index, pdf in enumerate(user_file_collection[user_id]["pdfs"], start=1):
             merger.append(pdf)
-            await message.reply_text(f"📝 Merging PDF {pdf_index} of {len(user_file_collection[user_id]['pdfs'])}...")
+            await progress_message.edit_text(f"📝 Merging PDF {pdf_index} of {len(user_file_collection[user_id]['pdfs'])}...")
 
         # Convert images to PDFs and add them
         tasks = []
         for img_index, img_path in enumerate(user_file_collection[user_id]["images"], start=1):
-            tasks.append(convert_image_to_pdf(img_path, merger, img_index, len(user_file_collection[user_id]["images"]), message))
+            tasks.append(convert_image_to_pdf(img_path, merger, img_index, len(user_file_collection[user_id]["images"]), progress_message))
 
         # Wait for all image-to-PDF conversions
         await asyncio.gather(*tasks)
@@ -143,6 +148,7 @@ async def handle_filename(client: Client, message: Message):
         merger.write(output_file)
         merger.close()
 
+        # Send the merged PDF to the user
         await client.send_document(
             chat_id=message.chat.id,
             document=output_file,
@@ -150,10 +156,12 @@ async def handle_filename(client: Client, message: Message):
             file_name=f"{custom_filename}.pdf",
         )
 
+        # After sending the merged file, delete the progress message
+        await progress_message.delete()
         await message.reply_text("✅ Your files have been successfully merged! 🎊")
 
     except Exception as e:
-        await message.reply_text(f"❌ Failed to merge files: {e}")
+        await progress_message.edit_text(f"❌ Failed to merge files: {e}")
 
     finally:
         # Clean up temporary files
@@ -170,14 +178,14 @@ async def handle_filename(client: Client, message: Message):
         pending_filename_requests.pop(user_id, None)
 
 # Helper function to convert images to PDFs asynchronously
-async def convert_image_to_pdf(img_path, merger, img_index, total_images, message):
+async def convert_image_to_pdf(img_path, merger, img_index, total_images, progress_message):
     try:
         image = Image.open(img_path)
         image = image.convert("RGB")
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as img_pdf:
             image.save(img_pdf.name, "PDF")
             merger.append(img_pdf.name)
-        await message.reply_text(f"📸 Converting image {img_index} of {total_images} to PDF... 🔄")
+        await progress_message.edit_text(f"📸 Converting image {img_index} of {total_images} to PDF... 🔄")
     except Exception as e:
         logger.error(f"Error converting image {img_path} to PDF: {e}")
 
