@@ -99,8 +99,9 @@ async def send_start(client: Client, message: Message):
     await client.send_message(
         chat_id=message.chat.id,
         text=(
-            "> **👋 Hi {mention}, I am a simple bot .**\n"
-            "I can help you with the following features:</b>\n\n"
+            "> **✨👋 Hey {mention}, Welcome!**\n"
+            "<i>I am a powerful bot designed to assist you effortlessly.</i>\n"
+            "**Here’s what I can do for you 👇🏻🤖**\n\n"
             "📌 <b>Send restricted content by its post link.</b>\n"
             "📌 <b>Merge multiple PDFs into a single file.</b>\n\n"
             "⚙️ <b>Know how to use the bot - /help</b>\n\n"
