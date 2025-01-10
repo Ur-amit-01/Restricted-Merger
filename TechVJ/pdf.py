@@ -9,11 +9,8 @@ import tempfile
 
 logger = logging.getLogger(__name__)
 
-# user_pdf_collection = {}
-
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
 pending_filename_requests = {}
-
 user_file_collection = {}  # Store PDFs and images separately for each user
 
 @Client.on_message(filters.command(["merge"]))
@@ -121,23 +118,27 @@ async def handle_filename(client: Client, message: Message):
         await message.reply_text("Invalid filename. Please try again.")
         return
 
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-        output_file = temp_file.name
-
     try:
-        # Merge PDFs
+        # Use a NamedTemporaryFile for the output PDF
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            output_file = temp_file.name
+
+        # Merge PDFs and images asynchronously
         merger = PdfMerger()
+        
+        # Merge PDF files
         for pdf in user_file_collection[user_id]["pdfs"]:
             merger.append(pdf)
 
         # Convert images to PDFs and add them
+        tasks = []
         for img_path in user_file_collection[user_id]["images"]:
-            image = Image.open(img_path)
-            image = image.convert("RGB")
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as img_pdf:
-                image.save(img_pdf.name, "PDF")
-                merger.append(img_pdf.name)
+            tasks.append(convert_image_to_pdf(img_path, merger))
 
+        # Wait for all image-to-PDF conversions
+        await asyncio.gather(*tasks)
+
+        # Write the merged output PDF
         merger.write(output_file)
         merger.close()
 
@@ -166,3 +167,15 @@ async def handle_filename(client: Client, message: Message):
 
         user_file_collection.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
+
+# Helper function to convert images to PDFs asynchronously
+async def convert_image_to_pdf(img_path, merger):
+    try:
+        image = Image.open(img_path)
+        image = image.convert("RGB")
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as img_pdf:
+            image.save(img_pdf.name, "PDF")
+            merger.append(img_pdf.name)
+    except Exception as e:
+        logger.error(f"Error converting image {img_path} to PDF: {e}")
+
