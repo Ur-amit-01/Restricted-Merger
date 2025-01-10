@@ -47,8 +47,6 @@ def progress(current, total, message, type):
     with open(f'{message.id}{type}status.txt', "w") as fileup:
         fileup.write(f"{current * 100 / total:.1f}%")
 
-
-
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
