@@ -49,34 +49,29 @@ async def progress(current, total, message, type):
     try:
         # Calculate percentage progress
         percent = current * 100 / total
-        processed = current / (1024 * 1024)
+        processed = current / (1024 * 1024)  # Processed in MB
         total_size = total / (1024 * 1024)  # Total size in MB
         
         # Calculate the download/upload speed in MB/s
         if hasattr(progress, "start_time"):
-            elapsed_time = time.time() - progress.start_time
+            elapsed_time = time.time() - progress.start_time  # Elapsed time in seconds
             speed = current / elapsed_time / (1024 * 1024)  # Speed in MB/s
         else:
             progress.start_time = time.time()
+            elapsed_time = 0
             speed = 0
 
-        # Estimate remaining time (in seconds)
-        if speed > 0:
-            remaining_time = (total - current) / (speed * 1024 * 1024)  # Remaining time in seconds
-        else:
-            remaining_time = 0
-
-        # Format the estimated time in a readable format (hours, minutes, seconds)
-        hours, remainder = divmod(int(remaining_time), 3600)
+        # Format the elapsed time in a readable format (hours, minutes, seconds)
+        hours, remainder = divmod(int(elapsed_time), 3600)
         minutes, seconds = divmod(remainder, 60)
         formatted_time = f"{hours}h {minutes}m {seconds}s" if hours else f"{minutes}m {seconds}s"
         
         # Update progress message in file
         with open(f'{message.id}{type}status.txt', "w") as fileup:
             fileup.write(f"**📊 Progress**: {percent:.1f}%\n"
-                         f"**📦 Processed: {processed:.2f}MB of {total_size:.2f}MB\n"
+                         f"**📦 Processed**: {processed:.2f}MB of {total_size:.2f}MB\n"
                          f"**⚡ Speed**: {speed:.2f} MB/s\n"
-                         f"**⏳ Time Left**: {formatted_time}")
+                         f"**⏱️ Time Elapsed**: {formatted_time}")
         
         # Update the message with the progress
         if percent % 5 == 0:  # Update every 5% for smoother experience
@@ -86,7 +81,7 @@ async def progress(current, total, message, type):
                     f"📊 Progress: {percent:.1f}%\n"
                     f"📦 Processed: {processed:.2f}MB of {total_size:.2f}MB\n"
                     f"⚡ Speed: {speed:.2f} MB/s\n"
-                    f"⏳ Time Left: {formatted_time}"
+                    f"⏱️ Time Elapsed: {formatted_time}"
                 )
             except Exception as e:
                 # In case of any errors, log them
@@ -94,7 +89,6 @@ async def progress(current, total, message, type):
         
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
-        
         
 
 @Client.on_message(filters.command(["start"]))
