@@ -1,5 +1,6 @@
 import os
 import logging
+import time
 import asyncio
 import pyrogram
 from pyrogram import Client, filters, enums
@@ -25,7 +26,7 @@ async def downstatus(client, statusfile, message, chat):
         with open(statusfile, "r") as downread:
             txt = downread.read()
         try:
-            await client.edit_message_text(chat, message.id, f"**Downloaded:** **{txt}**")
+            await client.edit_message_text(chat, message.id, f"**Downloading 📥** \n\n**{txt}**")
             await asyncio.sleep(10)
         except:
             await asyncio.sleep(5)
@@ -39,14 +40,62 @@ async def upstatus(client, statusfile, message, chat):
         with open(statusfile, "r") as upread:
             txt = upread.read()
         try:
-            await client.edit_message_text(chat, message.id, f"**Uploaded:** **{txt}**")
+            await client.edit_message_text(chat, message.id, f"**Uploading 📤** \n\n**{txt}**")
             await asyncio.sleep(10)
         except:
             await asyncio.sleep(5)
 
 def progress(current, total, message, type):
-    with open(f'{message.id}{type}status.txt', "w") as fileup:
-        fileup.write(f"{current * 100 / total:.1f}%")
+    try:
+        # Calculate percentage progress
+        percent = current * 100 / total
+        processed = current / (1024 * 1024)
+        remaining = (total - current) / (1024 * 1024)
+        
+        # Calculate the download/upload speed in KB/s
+        if hasattr(progress, "start_time"):
+            elapsed_time = time.time() - progress.start_time
+            speed = current / elapsed_time / 1024  # Speed in KB/s
+        else:
+            progress.start_time = time.time()
+            speed = 0
+
+        # Estimate remaining time (in seconds)
+        if speed > 0:
+            remaining_time = (total - current) / (speed * 1024)  # Remaining time in seconds
+        else:
+            remaining_time = 0
+
+        # Format the estimated time in a readable format (hours, minutes, seconds)
+        hours, remainder = divmod(int(remaining_time), 3600)
+        minutes, seconds = divmod(remainder, 60)
+        formatted_time = f"{hours}h {minutes}m {seconds}s" if hours else f"{minutes}m {seconds}s"
+        
+        # Update progress message
+        with open(f'{message.id}{type}status.txt', "w") as fileup:
+            fileup.write(f"**Progress**: {percent:.1f}%\n"
+                         f"**Processed**: {processed:.2f} MB\n"
+                         f"**Remaining**: {remaining:.2f} MB\n"
+                         f"**Speed**: {speed:.2f} KB/s\n"
+                         f"**Estimated Time Left**: {formatted_time}")
+        
+        # Update the message with the progress
+        if percent % 5 == 0:  # Update every 5% for smoother experience
+            try:
+                await message.edit_text(
+                    f"**Download Progress:**\n"
+                    f"Progress: {percent:.1f}%\n"
+                    f"Processed: {processed:.2f} MB\n"
+                    f"Remaining: {remaining:.2f} MB\n"
+                    f"Speed: {speed:.2f} KB/s\n"
+                    f"Time Left: {formatted_time}"
+                )
+            except Exception as e:
+                # In case of any errors, we just log them and continue
+                logger.error(f"Error updating message: {e}")
+        
+    except Exception as e:
+        logger.error(f"Error in progress function: {e}")
 
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
