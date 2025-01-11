@@ -139,7 +139,9 @@ async def handle_files(client: Client, message: Message):
     # Check if the file is a PDF or an image
     if message.document.mime_type == "application/pdf":
         if user_id in user_file_collection:
-            user_file_collection[user_id]["pdfs"].append(message.document.file_id)
+            # Download the PDF file and store it
+            file_path = await message.download()
+            user_file_collection[user_id]["pdfs"].append(file_path)
             await message.reply_text("PDF added to your merge list 📑.")
     elif message.photo:
         if user_id in user_file_collection:
