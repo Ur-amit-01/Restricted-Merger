@@ -112,3 +112,39 @@ async def handle_filename(client: Client, message: Message):
         user_file_collection.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
 
+
+async def process_image_to_pdf(img_path, merger):
+    """
+    Converts an image file to PDF and appends it to the PDF merger.
+    """
+    try:
+        # Open image using PIL
+        image = Image.open(img_path)
+        
+        # Convert image to PDF
+        img_pdf_path = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf").name
+        image.save(img_pdf_path, "PDF")
+        
+        # Append to the merger
+        merger.append(img_pdf_path)
+        os.remove(img_pdf_path)  # Clean up the temporary image-based PDF
+    except Exception as e:
+        logger.error(f"Error processing image {img_path}: {e}")
+
+
+@Client.on_message(filters.document)
+async def handle_files(client: Client, message: Message):
+    user_id = message.from_user.id
+
+    # Check if the file is a PDF or an image
+    if message.document.mime_type == "application/pdf":
+        if user_id in user_file_collection:
+            user_file_collection[user_id]["pdfs"].append(message.document.file_id)
+            await message.reply_text("PDF added to your merge list 📑.")
+    elif message.photo:
+        if user_id in user_file_collection:
+            # Save the image
+            file_path = await message.download()
+            user_file_collection[user_id]["images"].append(file_path)
+            await message.reply_text("Image added to your merge list 🖼️.")
+
