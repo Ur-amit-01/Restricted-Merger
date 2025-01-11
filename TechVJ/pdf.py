@@ -3,11 +3,14 @@ import logging
 import asyncio
 from PIL import Image
 from pyrogram import Client, filters
+from pyrogram.errors import FloodWait
 from PyPDF2 import PdfMerger
 from pyrogram.types import Message
 import tempfile
+import concurrent.futures
 
 # Setup logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Constants
@@ -15,6 +18,21 @@ MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
 user_file_collection = {}  # Store file IDs for each user
 pending_filename_requests = {}
 
+# Thread pool executor for concurrent tasks
+executor = concurrent.futures.ThreadPoolExecutor()
+
+async def process_pdf(client, user_id, file_id, temp_pdf_files):
+    """Async function to download and process PDF"""
+    temp_file = await client.download_media(file_id)
+    temp_pdf_files.append(temp_file)
+
+def process_image_to_pdf(image_path, temp_image_files):
+    """Function to convert image to PDF (run in a separate thread to avoid blocking)"""
+    with Image.open(image_path) as img:
+        img.convert("RGB").save(image_path, "PDF")
+        temp_image_files.append(image_path)
+
+# Handle the /merge command
 @Client.on_message(filters.command(["merge"]))
 async def start_file_collection(client: Client, message: Message):
     user_id = message.from_user.id
@@ -23,6 +41,7 @@ async def start_file_collection(client: Client, message: Message):
         "🔄 Ready to start! Send your PDFs 📑 and images 🖼️ one by one. When you're ready, type /done ✅ to merge them into one PDF. 🌟"
     )
 
+# Handle PDF files
 @Client.on_message(filters.document & filters.private)
 async def handle_pdf(client: Client, message: Message):
     user_id = message.from_user.id
@@ -53,6 +72,7 @@ async def handle_pdf(client: Client, message: Message):
         f"➕ PDF queued! 📄 ({len(user_file_collection[user_id]['pdfs'])} PDFs added so far.)"
     )
 
+# Handle image files
 @Client.on_message(filters.photo & filters.private)
 async def handle_image(client: Client, message: Message):
     user_id = message.from_user.id
@@ -66,6 +86,7 @@ async def handle_image(client: Client, message: Message):
         f"➕ Image queued! 🖼️ ({len(user_file_collection[user_id]['images'])} images added so far.)"
     )
 
+# Handle /done command
 @Client.on_message(filters.command(["done"]))
 async def merge_files(client: Client, message: Message):
     user_id = message.from_user.id
@@ -80,6 +101,7 @@ async def merge_files(client: Client, message: Message):
     await message.reply_text("✍️ Type a name for your merged PDF (without extension).")
     pending_filename_requests[user_id] = True
 
+# Handle the filename text input
 @Client.on_message(filters.text & filters.private)
 async def handle_filename(client: Client, message: Message):
     user_id = message.from_user.id
@@ -97,21 +119,27 @@ async def handle_filename(client: Client, message: Message):
         output_file = os.path.join(tempfile.gettempdir(), f"{filename}.pdf")
         merger = PdfMerger()
 
-        # Download and merge PDFs
+        # Download and merge PDFs asynchronously
         temp_pdf_files = []
+        tasks = []
         for file_id in user_file_collection[user_id]["pdfs"]:
-            temp_file = await client.download_media(file_id)
-            temp_pdf_files.append(temp_file)
-            merger.append(temp_file)
+            tasks.append(process_pdf(client, user_id, file_id, temp_pdf_files))
 
-        # Download and convert images to PDFs
+        # Convert images to PDFs in separate threads
         temp_image_files = []
         for file_id in user_file_collection[user_id]["images"]:
-            temp_file = await client.download_media(file_id)
-            temp_image_files.append(temp_file)
-            with Image.open(temp_file) as img:
-                img.convert("RGB").save(temp_file, "PDF")
-                merger.append(temp_file)
+            image_path = await client.download_media(file_id)
+            tasks.append(asyncio.to_thread(process_image_to_pdf, image_path, temp_image_files))
+
+        await asyncio.gather(*tasks)
+
+        # Merging PDFs
+        for pdf_file in temp_pdf_files:
+            merger.append(pdf_file)
+
+        # Merging image PDFs
+        for img_file in temp_image_files:
+            merger.append(img_file)
 
         # Save the merged PDF
         merger.write(output_file)
@@ -125,7 +153,12 @@ async def handle_filename(client: Client, message: Message):
             file_name=f"{filename}.pdf",
         )
 
+    except FloodWait as e:
+        logger.error(f"FloodWait error occurred: Must wait {e.x} seconds before retrying.")
+        await asyncio.sleep(e.x)  # Wait for the specified time
+        await message.reply_text("⚠️ Bot is temporarily flooded with requests. Please try again shortly.")
     except Exception as e:
+        logger.error(f"Unexpected error: {e}")
         await message.reply_text(f"❌ Failed to merge files: {e}")
     finally:
         # Clean up temporary files after processing
