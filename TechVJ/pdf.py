@@ -7,17 +7,18 @@ from PyPDF2 import PdfMerger
 from pyrogram.types import Message
 import tempfile
 
+# Setup logging
 logger = logging.getLogger(__name__)
 
+# Constants
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
+user_file_collection = {}  # Store file IDs for each user
 pending_filename_requests = {}
-user_file_collection = {}  # Store PDFs and images separately for each user
 
 @Client.on_message(filters.command(["merge"]))
 async def start_file_collection(client: Client, message: Message):
-    logger.info(f"/merge command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
-    user_file_collection[user_id] = {"pdfs": [], "images": []}  # Separate lists for PDFs and images
+    user_file_collection[user_id] = {"pdfs": [], "images": []}
     await message.reply_text(
         "🔄 Ready to start! Send your PDFs 📑 and images 🖼️ one by one. When you're ready, type /done ✅ to merge them into one PDF. 🌟"
     )
@@ -25,15 +26,20 @@ async def start_file_collection(client: Client, message: Message):
 @Client.on_message(filters.document & filters.private)
 async def handle_pdf(client: Client, message: Message):
     user_id = message.from_user.id
+    document = message.document
 
-    if message.document.mime_type != "application/pdf":
+    if document.mime_type != "application/pdf":
         await message.reply_text("❌ This is not a valid PDF file. Please send a PDF 📑.")
         return
 
-    if user_id not in user_file_collection:
+    if document.file_size > MAX_FILE_SIZE:
         await message.reply_text(
-            "⏳ Please start the merging process first by using /merge 🔄."
+            "🚫 File size is too large! Please send a PDF smaller than 20MB."
         )
+        return
+
+    if user_id not in user_file_collection:
+        await message.reply_text("⏳ Please start the merging process first by using /merge 🔄.")
         return
 
     if len(user_file_collection[user_id]["pdfs"]) >= 20:
@@ -42,150 +48,97 @@ async def handle_pdf(client: Client, message: Message):
         )
         return
 
-    if message.document.file_size > MAX_FILE_SIZE:
-        await message.reply_text(
-            "🚫 File size is too large! Please send a PDF smaller than 20MB."
-        )
-        return
-
-    try:
-        temp_file = await message.download()  
-        user_file_collection[user_id]["pdfs"].append(temp_file)
-
-        await message.reply_text(
-            f"➕ PDF added! 📄 ({len(user_file_collection[user_id]['pdfs'])} PDFs added so far.)\n"
-            "Send more files or use /done ✅ to merge them."
-        )
-    except Exception as e:
-        await message.reply_text(f"❌ Failed to upload the PDF: {e}")
+    user_file_collection[user_id]["pdfs"].append(document.file_id)
+    await message.reply_text(
+        f"➕ PDF queued! 📄 ({len(user_file_collection[user_id]['pdfs'])} PDFs added so far.)"
+    )
 
 @Client.on_message(filters.photo & filters.private)
 async def handle_image(client: Client, message: Message):
     user_id = message.from_user.id
 
     if user_id not in user_file_collection:
-        await message.reply_text(
-            "⏳ Please start the merging process first by using /merge 🔄."
-        )
+        await message.reply_text("⏳ Please start the merging process first by using /merge 🔄.")
         return
 
-    try:
-        temp_file = await message.download()  
-        user_file_collection[user_id]["images"].append(temp_file)
-
-        await message.reply_text(
-            f"➕ Image added! 🖼️ ({len(user_file_collection[user_id]['images'])} images added so far.)\n"
-            "Send more files or use /done ✅ to merge them."
-        )
-    except Exception as e:
-        await message.reply_text(f"❌ Failed to upload the image: {e}")
+    user_file_collection[user_id]["images"].append(message.photo.file_id)
+    await message.reply_text(
+        f"➕ Image queued! 🖼️ ({len(user_file_collection[user_id]['images'])} images added so far.)"
+    )
 
 @Client.on_message(filters.command(["done"]))
 async def merge_files(client: Client, message: Message):
-    logger.info(f"/done command triggered by user {message.from_user.id}")
     user_id = message.from_user.id
 
     if user_id not in user_file_collection or (
-        len(user_file_collection[user_id]["pdfs"]) < 1 
-        and len(user_file_collection[user_id]["images"]) < 1
+        not user_file_collection[user_id]["pdfs"]
+        and not user_file_collection[user_id]["images"]
     ):
-        await message.reply_text(
-            "⚠️ Please send at least one PDF 📑 or image 🖼️ before using /done ✅. Start fresh with /merge 🔄."
-        )
+        await message.reply_text("⚠️ Please upload at least one PDF or image before using /done.")
         return
 
-    await message.reply_text(
-        "✍️ Type a name for your merged PDF 📄 (without extension)."
-    )
-    pending_filename_requests[user_id] = {"filename_request": True}
+    await message.reply_text("✍️ Type a name for your merged PDF (without extension).")
+    pending_filename_requests[user_id] = True
 
-@Client.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
+@Client.on_message(filters.text & filters.private)
 async def handle_filename(client: Client, message: Message):
     user_id = message.from_user.id
 
-    if user_id not in pending_filename_requests or not pending_filename_requests[user_id]["filename_request"]:
-        return  
-
-    custom_filename = message.text.strip()
-    if not custom_filename:  
-        await message.reply_text("❌ Filename cannot be empty. Please try again.")
+    if user_id not in pending_filename_requests:
         return
 
-    custom_filename = os.path.splitext(custom_filename)[0]
-    custom_filename = custom_filename.replace("/", "_").replace("\\", "_").strip()
-
-    if not custom_filename:  
+    filename = message.text.strip().replace("/", "_").replace("\\", "_")
+    if not filename:
         await message.reply_text("❌ Invalid filename. Please try again.")
         return
 
-    # Send progress message after the filename is received
-    progress_message = await message.reply_text(
-        "🛠️ Merging your files... Please wait... 🔄"
-    )
-    
+    await message.reply_text("🔄 Downloading files and merging... Please wait.")
     try:
-        # Use a NamedTemporaryFile for the output PDF
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
-            output_file = temp_file.name
-
-        # Merge PDFs and images asynchronously
+        output_file = os.path.join(tempfile.gettempdir(), f"{filename}.pdf")
         merger = PdfMerger()
 
-        # Merge PDF files
-        for pdf_index, pdf in enumerate(user_file_collection[user_id]["pdfs"], start=1):
-            merger.append(pdf)
-            await progress_message.edit_text(f"📝 Merging PDF {pdf_index} of {len(user_file_collection[user_id]['pdfs'])}...")
+        # Download and merge PDFs
+        temp_pdf_files = []
+        for file_id in user_file_collection[user_id]["pdfs"]:
+            temp_file = await client.download_media(file_id)
+            temp_pdf_files.append(temp_file)
+            merger.append(temp_file)
 
-        # Convert images to PDFs and add them
-        tasks = []
-        for img_index, img_path in enumerate(user_file_collection[user_id]["images"], start=1):
-            tasks.append(convert_image_to_pdf(img_path, merger, img_index, len(user_file_collection[user_id]["images"]), progress_message))
+        # Download and convert images to PDFs
+        temp_image_files = []
+        for file_id in user_file_collection[user_id]["images"]:
+            temp_file = await client.download_media(file_id)
+            temp_image_files.append(temp_file)
+            with Image.open(temp_file) as img:
+                img.convert("RGB").save(temp_file, "PDF")
+                merger.append(temp_file)
 
-        # Wait for all image-to-PDF conversions
-        await asyncio.gather(*tasks)
-
-        # Write the merged output PDF
+        # Save the merged PDF
         merger.write(output_file)
         merger.close()
 
         # Send the merged PDF to the user
         await client.send_document(
-            chat_id=message.chat.id,
+            chat_id=user_id,
             document=output_file,
-            caption=f"🎉 Here is your merged PDF 📄.",
-            file_name=f"{custom_filename}.pdf",
+            caption="🎉 Here is your merged PDF!",
+            file_name=f"{filename}.pdf",
         )
 
-        # After sending the merged file, delete the progress message
-        await progress_message.delete()
-        await message.reply_text("✅ Your files have been successfully merged! 🎊")
-
     except Exception as e:
-        await progress_message.edit_text(f"❌ Failed to merge files: {e}")
-
+        await message.reply_text(f"❌ Failed to merge files: {e}")
     finally:
-        # Clean up temporary files
-        for pdf in user_file_collection[user_id]["pdfs"]:
-            if os.path.exists(pdf):
-                os.remove(pdf)
-        for img in user_file_collection[user_id]["images"]:
-            if os.path.exists(img):
-                os.remove(img)
+        # Clean up temporary files after processing
+        for pdf_file in temp_pdf_files:
+            if os.path.exists(pdf_file):
+                os.remove(pdf_file)
+        for img_file in temp_image_files:
+            if os.path.exists(img_file):
+                os.remove(img_file)
         if os.path.exists(output_file):
             os.remove(output_file)
 
+        # Clear the user session data
         user_file_collection.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
-
-# Helper function to convert images to PDFs asynchronously
-async def convert_image_to_pdf(img_path, merger, img_index, total_images, progress_message):
-    try:
-        image = Image.open(img_path)
-        image = image.convert("RGB")
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as img_pdf:
-            image.save(img_pdf.name, "PDF")
-            merger.append(img_pdf.name)
-        await progress_message.edit_text(f"📸 Converting image {img_index} of {total_images} to PDF... 🔄")
-    except Exception as e:
-        logger.error(f"Error converting image {img_path} to PDF: {e}")
 
