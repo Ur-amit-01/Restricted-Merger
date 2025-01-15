@@ -19,7 +19,7 @@ async def start_file_collection(client: Client, message: Message):
     user_id = message.from_user.id
     user_file_collection[user_id] = {"pdfs": [], "images": []}  # Separate lists for PDFs and images
     await message.reply_text(
-        "🔄 Ready to start! Send your PDFs 📑 and images 🖼️ one by one. When you're ready, type /done ✅ to merge them into one PDF. 🌟"
+        "Sᴇɴᴅ ʏᴏᴜʀ ᴘᴅꜰꜱ 📑 ᴀɴᴅ ɪᴍᴀɢᴇꜱ 🖼️ ᴏɴᴇ ʙʏ ᴏɴᴇ. Wʜᴇɴ ʏᴏᴜ'ʀᴇ ʀᴇᴀᴅʏ, Sᴇɴᴅ /done ✅ ᴛᴏ ᴍᴇʀɢᴇ ᴛʜᴇᴍ ɪɴᴛᴏ ᴏɴᴇ ᴘᴅꜰ. 🌟"
     )
 
 @Client.on_message(filters.document & filters.private)
