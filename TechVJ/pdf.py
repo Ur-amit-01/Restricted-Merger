@@ -71,6 +71,7 @@ async def handle_image_metadata(client: Client, message: Message):
         await message.reply_text("👍 Thumbnail image received! Now proceed with merging.")
         return
 
+    # Only add image to merging list if it's not a thumbnail
     user_file_metadata[user_id].append(
         {
             "type": "image",
@@ -141,8 +142,6 @@ async def add_thumbnail(client: Client, callback_query: Message):
     pending_thumbnail_requests[user_id] = False  # User opted to add a thumbnail
     await callback_query.message.edit_text("👍 Thumbnail option selected. Send the image now.")
 
-    # Now, allow the user to send the image for the thumbnail
-
 
 @Client.on_callback_query(filters.regex("skip_thumbnail"))
 async def skip_thumbnail(client: Client, callback_query: Message):
@@ -153,16 +152,6 @@ async def skip_thumbnail(client: Client, callback_query: Message):
 
     pending_thumbnail_requests[user_id] = False  # User skipped the thumbnail
     await callback_query.message.edit_text("🎉 No thumbnail will be added. Merging files... 🔄")
-
-
-@Client.on_message(filters.photo & filters.private)
-async def handle_thumbnail(client: Client, message: Message):
-    user_id = message.from_user.id
-
-    if user_id in pending_thumbnail_requests and pending_thumbnail_requests[user_id]:
-        # This image is for the thumbnail, don't add it to the merging list
-        await message.reply_text("👍 Thumbnail image received! Now proceed with merging.")
-        return
 
 
 @Client.on_message(filters.command(["done"]) & filters.private)
