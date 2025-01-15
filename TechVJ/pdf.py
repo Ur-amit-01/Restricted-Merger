@@ -18,7 +18,7 @@ async def start_file_collection(client: Client, message: Message):
     user_id = message.from_user.id
     user_file_metadata[user_id] = []  # Reset file list for the user
     await message.reply_text(
-        "🔄 Ready to start! Send your PDFs 📑 and images 🖼️ one by one. When you're ready, type /done ✅ to merge them into one PDF. 🌟"
+        "📤 Upload files in sequence, type /done ✅, and get your merged PDF !! 🚀"
     )
 
 
@@ -86,7 +86,7 @@ async def merge_files(client: Client, message: Message):
         await message.reply_text("⚠️ You haven't added any files yet. Use /merge to start.")
         return
 
-    await message.reply_text("✍️ Type a name for your merged PDF 📄 (without extension).")
+    await message.reply_text("✍️ Type a name for your merged PDF 📄.")
     pending_filename_requests[user_id] = {"filename_request": True}
 
 
@@ -107,7 +107,7 @@ async def handle_filename(client: Client, message: Message):
         await message.reply_text("❌ Invalid filename. Please try again.")
         return
 
-    progress_message = await message.reply_text("🛠️ Downloading and merging your files... Please wait... 🔄")
+    progress_message = await message.reply_text("🛠️ Merging your files... Please wait... 🔄")
 
     try:
         # Temporary directory for downloading files
@@ -119,14 +119,14 @@ async def handle_filename(client: Client, message: Message):
                 if file_data["type"] == "pdf":
                     file_path = await client.download_media(file_data["file_id"], file_name=os.path.join(temp_dir, file_data["file_name"]))
                     merger.append(file_path)
-                    await progress_message.edit_text(f"📑 Merging PDF {index} of {len(user_file_metadata[user_id])}...")
+                    await progress_message.edit_text(f"📑 Merging PDFs {index} of {len(user_file_metadata[user_id])}...")
                 elif file_data["type"] == "image":
                     img_path = await client.download_media(file_data["file_id"], file_name=os.path.join(temp_dir, file_data["file_name"]))
                     image = Image.open(img_path).convert("RGB")
                     img_pdf_path = os.path.join(temp_dir, f"{os.path.splitext(file_data['file_name'])[0]}.pdf")
                     image.save(img_pdf_path, "PDF")
                     merger.append(img_pdf_path)
-                    await progress_message.edit_text(f"📸 Converting and merging image {index} of {len(user_file_metadata[user_id])}...")
+                    await progress_message.edit_text(f"📸 Merging image {index} of {len(user_file_metadata[user_id])}...")
 
             merger.write(output_file)
             merger.close()
@@ -137,7 +137,8 @@ async def handle_filename(client: Client, message: Message):
                 caption="🎉 Here is your merged PDF 📄.",
             )
             await progress_message.delete()
-            await message.reply_text("✅ Your files have been successfully merged! 🎊")
+            await message.reply_text("🔥 Your PDF is ready! Enjoy! 🎉
+            ")
 
     except Exception as e:
         await progress_message.edit_text(f"❌ Failed to merge files: {e}")
