@@ -1,4 +1,5 @@
 import os
+import re
 import logging
 import tempfile
 from PIL import Image
@@ -98,21 +99,43 @@ async def handle_filename(client: Client, message: Message):
         return
 
     custom_filename = message.text.strip()
+
     if not custom_filename:
         await message.reply_text("❌ Filename cannot be empty. Please try again.")
         return
 
-    custom_filename = os.path.splitext(custom_filename)[0].replace("/", "_").replace("\\", "_").strip()
-    if not custom_filename:
-        await message.reply_text("❌ Invalid filename. Please try again.")
-        return
+    # Check if the filename contains a thumbnail link
+    match = re.match(r"(.*)\s*-t\s*(https?://\S+)", custom_filename)
+    if match:
+        filename_without_thumbnail = match.group(1).strip()
+        thumbnail_link = match.group(2).strip()
 
+        # Validate the thumbnail link
+        try:
+            response = requests.get(thumbnail_link)
+            if response.status_code != 200:
+                await message.reply_text("❌ Failed to fetch the image. Please provide a valid thumbnail link.")
+                return
+
+            # Save the image to a temporary file
+            with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as temp_thumbnail:
+                temp_thumbnail.write(response.content)
+                thumbnail_path = temp_thumbnail.name
+
+        except Exception as e:
+            await message.reply_text(f"❌ Error while downloading the thumbnail: {e}")
+            return
+
+    else:
+        filename_without_thumbnail = custom_filename
+        thumbnail_path = None  # No thumbnail provided
+
+    # Proceed to merge the files as before
     progress_message = await message.reply_text("🛠️ Merging your files... Please wait... 🔄")
 
     try:
-        # Temporary directory for downloading files
         with tempfile.TemporaryDirectory() as temp_dir:
-            output_file = os.path.join(temp_dir, f"{custom_filename}.pdf")
+            output_file = os.path.join(temp_dir, f"{filename_without_thumbnail}.pdf")
             merger = PdfMerger()
 
             for index, file_data in enumerate(user_file_metadata[user_id], start=1):
@@ -131,11 +154,21 @@ async def handle_filename(client: Client, message: Message):
             merger.write(output_file)
             merger.close()
 
-            await client.send_document(
-                chat_id=message.chat.id,
-                document=output_file,
-                caption="🎉 Here is your merged PDF 📄.",
-            )
+            # Send the merged file with or without the thumbnail
+            if thumbnail_path:
+                await client.send_document(
+                    chat_id=message.chat.id,
+                    document=output_file,
+                    thumb=thumbnail_path,  # Set the thumbnail
+                    caption="🎉 Here is your merged PDF 📄.",
+                )
+            else:
+                await client.send_document(
+                    chat_id=message.chat.id,
+                    document=output_file,
+                    caption="🎉 Here is your merged PDF 📄.",
+                )
+
             await progress_message.delete()
             await message.reply_text("🔥 Your PDF is ready! Enjoy! 🎉")
 
@@ -145,3 +178,4 @@ async def handle_filename(client: Client, message: Message):
     finally:
         user_file_metadata.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
+
