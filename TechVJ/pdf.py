@@ -137,8 +137,7 @@ async def handle_filename(client: Client, message: Message):
                 caption="🎉 Here is your merged PDF 📄.",
             )
             await progress_message.delete()
-            await message.reply_text("🔥 Your PDF is ready! Enjoy! 🎉
-            ")
+            await message.reply_text("🔥 Your PDF is ready! Enjoy! 🎉")
 
     except Exception as e:
         await progress_message.edit_text(f"❌ Failed to merge files: {e}")
