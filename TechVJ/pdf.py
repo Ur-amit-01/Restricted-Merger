@@ -4,7 +4,7 @@ import tempfile
 from PIL import Image
 from pyrogram import Client, filters
 from PyPDF2 import PdfMerger
-from pyrogram import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.types import Message
 
 logger = logging.getLogger(__name__)
