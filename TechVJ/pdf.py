@@ -4,14 +4,14 @@ import tempfile
 from PIL import Image
 from pyrogram import Client, filters
 from PyPDF2 import PdfMerger
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.types import Message
+from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 logger = logging.getLogger(__name__)
 
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
 pending_filename_requests = {}
 user_file_metadata = {}  # Store metadata for each user's files
+pending_thumbnail_requests = {}  # To track users who are asked for a thumbnail
 
 
 @Client.on_message(filters.command(["merge"]))
@@ -66,6 +66,11 @@ async def handle_image_metadata(client: Client, message: Message):
         await message.reply_text("⏳ Start the merging process first with /merge 🔄.")
         return
 
+    if user_id in pending_thumbnail_requests and pending_thumbnail_requests[user_id]:
+        # This image is only for thumbnail, not added to merging list
+        await message.reply_text("👍 Thumbnail image received! Now proceed with merging.")
+        return
+
     user_file_metadata[user_id].append(
         {
             "type": "image",
@@ -87,75 +92,93 @@ async def merge_files(client: Client, message: Message):
         await message.reply_text("⚠️ You haven't added any files yet. Use /merge to start.")
         return
 
+    # Ask for the filename
     await message.reply_text("✍️ Type a name for your merged PDF 📄.")
     pending_filename_requests[user_id] = {"filename_request": True}
-    
-    # Send message with options to add thumbnail or not
-    keyboard = [
-        [InlineKeyboardButton("Add Thumbnail", callback_data="add_thumbnail"),
-         InlineKeyboardButton("No", callback_data="no_thumbnail")]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    
-    await message.reply_text(
-        "Do you want to add a thumbnail to your merged PDF? 📷",
-        reply_markup=reply_markup
-    )
 
-    # Save filename and move to the next step
-    pending_filename_requests[user_id]["filename"] = custom_filename
-    pending_filename_requests[user_id]["thumbnail_request"] = True
+
+@Client.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
+async def handle_filename(client: Client, message: Message):
+    user_id = message.from_user.id
+
+    if user_id not in pending_filename_requests or not pending_filename_requests[user_id]["filename_request"]:
+        return
+
+    custom_filename = message.text.strip()
+    if not custom_filename:
+        await message.reply_text("❌ Filename cannot be empty. Please try again.")
+        return
+
+    custom_filename = os.path.splitext(custom_filename)[0].replace("/", "_").replace("\\", "_").strip()
+    if not custom_filename:
+        await message.reply_text("❌ Invalid filename. Please try again.")
+        return
+
+    # After filename, ask if the user wants to add a thumbnail
+    keyboard = InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton("Add Thumbnail", callback_data="add_thumbnail"),
+                InlineKeyboardButton("Skip Thumbnail", callback_data="skip_thumbnail"),
+            ]
+        ]
+    )
+    await message.reply_text(
+        "📸 Do you want to add a thumbnail image?",
+        reply_markup=keyboard,
+    )
+    pending_thumbnail_requests[user_id] = True
+    pending_filename_requests.pop(user_id, None)  # Stop waiting for filename
 
 
 @Client.on_callback_query(filters.regex("add_thumbnail"))
-async def ask_for_thumbnail(client: Client, callback_query):
+async def add_thumbnail(client: Client, callback_query: Message):
     user_id = callback_query.from_user.id
-    await callback_query.answer()
 
-    # Ask for the thumbnail
-    await client.send_message(user_id, "Please send the image you want to use as a thumbnail for the PDF 📸.")
-    
-    # Update status
-    pending_filename_requests[user_id]["thumbnail_request"] = True
+    if user_id not in pending_thumbnail_requests or not pending_thumbnail_requests[user_id]:
+        return
+
+    pending_thumbnail_requests[user_id] = False  # User opted to add a thumbnail
+    await callback_query.message.edit_text("👍 Thumbnail option selected. Send the image now.")
+
+    # Now, allow the user to send the image for the thumbnail
 
 
-@Client.on_callback_query(filters.regex("no_thumbnail"))
-async def skip_thumbnail(client: Client, callback_query):
+@Client.on_callback_query(filters.regex("skip_thumbnail"))
+async def skip_thumbnail(client: Client, callback_query: Message):
     user_id = callback_query.from_user.id
-    await callback_query.answer()
 
-    # Proceed without thumbnail
-    pending_filename_requests[user_id]["thumbnail_request"] = False
-    await client.send_message(user_id, "No thumbnail will be added. Merging files now... 🔄")
+    if user_id not in pending_thumbnail_requests or not pending_thumbnail_requests[user_id]:
+        return
+
+    pending_thumbnail_requests[user_id] = False  # User skipped the thumbnail
+    await callback_query.message.edit_text("🎉 No thumbnail will be added. Merging files... 🔄")
 
 
 @Client.on_message(filters.photo & filters.private)
 async def handle_thumbnail(client: Client, message: Message):
     user_id = message.from_user.id
 
-    if user_id not in pending_filename_requests or not pending_filename_requests[user_id].get("thumbnail_request"):
+    if user_id in pending_thumbnail_requests and pending_thumbnail_requests[user_id]:
+        # This image is for the thumbnail, don't add it to the merging list
+        await message.reply_text("👍 Thumbnail image received! Now proceed with merging.")
         return
 
-    # Save the thumbnail image
-    thumbnail_path = os.path.join(tempfile.gettempdir(), f"{user_id}_thumbnail.jpg")
-    await message.download(thumbnail_path)
 
-    # Update pending requests with the thumbnail path
-    pending_filename_requests[user_id]["thumbnail_path"] = thumbnail_path
-    await message.reply_text("Thumbnail added successfully! 🎉 Now I will merge your PDF.")
+@Client.on_message(filters.command(["done"]) & filters.private)
+async def final_merge(client: Client, message: Message):
+    user_id = message.from_user.id
 
-    # Proceed to merging after the thumbnail is received
-    await merge_pdfs_with_thumbnail(client, user_id)
+    if user_id not in user_file_metadata or not user_file_metadata[user_id]:
+        await message.reply_text("⚠️ You haven't added any files yet. Use /merge to start.")
+        return
 
+    await message.reply_text("✍️ Merging your files... Please wait... 🔄")
 
-async def merge_pdfs_with_thumbnail(client: Client, user_id: int):
-    custom_filename = pending_filename_requests[user_id]["filename"]
-    thumbnail_path = pending_filename_requests[user_id].get("thumbnail_path")
-
-    progress_message = await client.send_message(user_id, "🛠️ Merging your files... Please wait... 🔄")
+    # Continue with merging after handling the thumbnail request
+    progress_message = await message.reply_text("🛠️ Merging your files... Please wait... 🔄")
 
     try:
-        # Temporary directory for downloading files
         with tempfile.TemporaryDirectory() as temp_dir:
             output_file = os.path.join(temp_dir, f"{custom_filename}.pdf")
             merger = PdfMerger()
@@ -176,23 +199,13 @@ async def merge_pdfs_with_thumbnail(client: Client, user_id: int):
             merger.write(output_file)
             merger.close()
 
-            # Send the merged PDF with a thumbnail if provided
-            if thumbnail_path:
-                await client.send_document(
-                    chat_id=user_id,
-                    document=output_file,
-                    caption="🎉 Here is your merged PDF with thumbnail 📄.",
-                    thumb=thumbnail_path  # Use the thumbnail as a preview for the document
-                )
-            else:
-                await client.send_document(
-                    chat_id=user_id,
-                    document=output_file,
-                    caption="🎉 Here is your merged PDF 📄."
-                )
-            
+            await client.send_document(
+                chat_id=message.chat.id,
+                document=output_file,
+                caption="🎉 Here is your merged PDF 📄.",
+            )
             await progress_message.delete()
-            await client.send_message(user_id, "🔥 Your PDF is ready! Enjoy! 🎉")
+            await message.reply_text("🔥 Your PDF is ready! Enjoy! 🎉")
 
     except Exception as e:
         await progress_message.edit_text(f"❌ Failed to merge files: {e}")
@@ -200,4 +213,5 @@ async def merge_pdfs_with_thumbnail(client: Client, user_id: int):
     finally:
         user_file_metadata.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
+        pending_thumbnail_requests.pop(user_id, None)
 
