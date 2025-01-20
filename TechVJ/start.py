@@ -149,7 +149,7 @@ async def help_callback(client: Client, callback_query):
     await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
 
 @Client.on_callback_query(filters.regex("back"))
-async def back_callback(client: Client, callback_query):
+async def back_callback(client: Client, callback_query, message: Message):
     start_text = (
         f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
         "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
