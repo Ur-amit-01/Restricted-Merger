@@ -102,12 +102,17 @@ async def progress(current, total, message, type):
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
 
-#————————————————————————————————————————————————————————————————————————————————————————————
+#————————————————————————————————————————————————————————————————————————————————————————————import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
+    logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
     start_text = (
         f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜜʟʏ.**\n\n"
         "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
     reply_markup = InlineKeyboardMarkup([
@@ -118,6 +123,7 @@ async def send_start(client: Client, message: Message):
 
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
+    logger.info(f"About callback triggered by {callback_query.from_user.id}")  # Log the callback query
     uptime = get_uptime()  # Get the bot's uptime
     ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
 
@@ -135,11 +141,12 @@ async def about_callback(client: Client, callback_query):
     try:
         await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup, parse_mode="Markdown")
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error(f"Error editing about text: {e}")
 
 
 @Client.on_callback_query(filters.regex("help"))
 async def help_callback(client: Client, callback_query):
+    logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
     help_text = (
         "**📖 Help Menu:**\n\n"
         "Here’s how you can use me:\n"
@@ -152,17 +159,21 @@ async def help_callback(client: Client, callback_query):
     ])
     await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
 
+
 @Client.on_callback_query(filters.regex("back"))
 async def back_callback(client: Client, callback_query):
+    logger.info(f"Back callback triggered by {callback_query.from_user.id}")  # Log the callback query
     start_text = (
         f"> **✨👋🏻 Hey {callback_query.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜜʟʏ.**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇ꜇ᴏʀᴛʟᴇꜜʟʏ.**\n\n"
         "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
     ])
     await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
+
+
 #————————————————————————————————————————————————————————————————————————————————————————————
 
 
