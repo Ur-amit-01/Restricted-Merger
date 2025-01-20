@@ -95,7 +95,7 @@ async def progress(current, total, message, type):
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     start_text = (
-        f"> **✨👋 Hey {mention}, Welcome!**\n\n"
+        f"> **✨👋 Hey {message.from_user.mention}, Welcome!**\n\n"
         "** 🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n"
         "Use the buttons below to learn more about my functions!"
     )
