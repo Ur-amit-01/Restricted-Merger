@@ -107,16 +107,22 @@ async def send_start(client: Client, message: Message):
 
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
-    about_text = (
-        "**🤖 About Me:**\n\n"
-        "I am a multi-functional bot created to make your life easier. From merging PDFs to fetching restricted content, "
-        "I am here to assist you every step of the way.\n\n"
-        "> **👨‍💻 Developed by: [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**"
-    )
+    uptime = get_uptime()  # Get the bot's uptime
+    ABOUT_TXT = f"""<b><blockquote>⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟</blockquote>
+    
+    ‣ ᴍʏ ɴᴀᴍᴇ : <a href=https://t.me/{callback_query.from_user.username}>{callback_query.from_user.first_name}</a>
+    ‣ ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : <a href='tg://settings'>ᴛʜɪs ᴘᴇʀsᴏɴ</a> 
+    ‣ ᴅᴇᴠᴇʟᴏᴘᴇʀ : <a href='https://t.me/Ur_Amit_01'>ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝</a> 
+    ‣ ʟɪʙʀᴀʀʏ : <a href='https://docs.pyrogram.org/'>ᴘʏʀᴏɢʀᴀᴍ</a> 
+    ‣ ʟᴀɴɢᴜᴀɢᴇ : <a href='https://www.python.org/download/releases/3.0/'>ᴘʏᴛʜᴏɴ 3</a> 
+    ‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : ᴠ2.7.1 [sᴛᴀʙʟᴇ]
+    ‣ ᴜᴘᴛɪᴍᴇ : {uptime}</b>"""
+    
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="back")]
     ])
-    await callback_query.message.edit_text(about_text, reply_markup=reply_markup, disable_web_page_preview=True)
+    await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup, parse_mode="HTML", disable_web_page_preview=True)
+
 
 @Client.on_callback_query(filters.regex("help"))
 async def help_callback(client: Client, callback_query):
