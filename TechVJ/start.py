@@ -92,12 +92,13 @@ async def progress(current, total, message, type):
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
 
+#————————————————————————————————————————————————————————————————————————————————————————————
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     start_text = (
-        f"> **✨👋 Hey {message.from_user.mention}, Welcome!**\n\n"
-        "** 🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n"
-        "Use the buttons below to learn more about my functions!"
+        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
@@ -134,16 +135,17 @@ async def help_callback(client: Client, callback_query):
 @Client.on_callback_query(filters.regex("back"))
 async def back_callback(client: Client, callback_query):
     start_text = (
-        f"**✨ Welcome back, {callback_query.from_user.mention}!**\n\n"
-        "I am your friendly assistant bot. Here's what I can do for you:\n"
-        "🔹 Help you access restricted content.\n"
-        "🔹 Merge PDFs and perform other cool tasks.\n\n"
-        "Use the buttons below to learn more about me!"
+        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
     ])
     await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
+
+#————————————————————————————————————————————————————————————————————————————————————————————
+
 
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
