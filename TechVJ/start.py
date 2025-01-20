@@ -9,12 +9,22 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 from TechVJ.strings import HELP_TXT
 
+start_time = time.time()
 logger = logging.getLogger(__name__)
     
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 class batch_temp(object):
     IS_BATCH = {}
+
+def get_uptime():
+    uptime_seconds = time.time() - start_time
+    days = int(uptime_seconds // (24 * 3600))
+    hours = int((uptime_seconds % (24 * 3600)) // 3600)
+    minutes = int((uptime_seconds % 3600) // 60)
+    seconds = int(uptime_seconds % 60)
+    return f"{days}d {hours}h {minutes}m {seconds}s"
+
 
 async def downstatus(client, statusfile, message, chat):
     while True:
