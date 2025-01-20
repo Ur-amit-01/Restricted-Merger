@@ -91,33 +91,59 @@ async def progress(current, total, message, type):
         
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
-        
 
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
-    logger.info(f"/start command triggered by user {message.from_user.id}")
-    await client.send_message(
-        chat_id=message.chat.id,
-        text=(
-            "> **✨👋 Hey {mention}, Welcome!**\n"
-            "ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.\n\n"
-            "**Here’s what I can do for you 👇🏻🤖**\n"
-            "📌 <b>Send restricted content by its post link.</b>\n"
-            "📌 <b>Merge multiple PDFs into a single file.</b>\n\n"
-            "⚙️ <b>Know how to use the bot - /help</b>\n\n"
-            "> **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**"
-        ).format(mention=message.from_user.mention),
-        disable_web_page_preview=True
+    start_text = (
+        f"> **✨👋 Hey {mention}, Welcome!**\n\n"
+        "** 🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n"
+        "Use the buttons below to learn more about my functions!"
     )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
+    ])
+    await message.reply_text(start_text, reply_markup=reply_markup)
 
-@Client.on_message(filters.command(["help"]))
-async def send_help(client: Client, message: Message):
-    logger.info(f"/help command triggered by user {message.from_user.id}")
-    await client.send_message(
-        chat_id=message.chat.id,
-        text=f"{HELP_TXT}",
-        disable_web_page_preview=True
+@Client.on_callback_query(filters.regex("about"))
+async def about_callback(client: Client, callback_query):
+    about_text = (
+        "**🤖 About Me:**\n\n"
+        "I am a multi-functional bot created to make your life easier. From merging PDFs to fetching restricted content, "
+        "I am here to assist you every step of the way.\n\n"
+        "> **👨‍💻 Developed by: [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**"
     )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔙 Back", callback_data="back")]
+    ])
+    await callback_query.message.edit_text(about_text, reply_markup=reply_markup, disable_web_page_preview=True)
+
+@Client.on_callback_query(filters.regex("help"))
+async def help_callback(client: Client, callback_query):
+    help_text = (
+        "**📖 Help Menu:**\n\n"
+        "Here’s how you can use me:\n"
+        "1. Send me a Telegram post link to download restricted content.\n"
+        "2. Merge PDFs by sending me multiple PDF files.\n\n"
+        "Need more assistance? Feel free to ask!"
+    )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔙 Back", callback_data="back")]
+    ])
+    await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
+
+@Client.on_callback_query(filters.regex("back"))
+async def back_callback(client: Client, callback_query):
+    start_text = (
+        f"**✨ Welcome back, {callback_query.from_user.mention}!**\n\n"
+        "I am your friendly assistant bot. Here's what I can do for you:\n"
+        "🔹 Help you access restricted content.\n"
+        "🔹 Merge PDFs and perform other cool tasks.\n\n"
+        "Use the buttons below to learn more about me!"
+    )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
+    ])
+    await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
 
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
