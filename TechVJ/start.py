@@ -153,17 +153,16 @@ async def help_callback(client: Client, callback_query):
     await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
 
 @Client.on_callback_query(filters.regex("back"))
-async def back_callback(client: Client, callback_query, message: Message):
+async def back_callback(client: Client, callback_query):
     start_text = (
-        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        f"> **✨👋🏻 Hey {callback_query.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜜʟʏ.**\n\n"
         "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
     ])
     await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
-
 #————————————————————————————————————————————————————————————————————————————————————————————
 
 
