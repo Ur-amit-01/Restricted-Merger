@@ -132,14 +132,14 @@ async def about_callback(client: Client, callback_query):
     ‣ **ᴅᴇᴠᴇʟᴏᴘᴇʀ** : [**ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝**](https://t.me/Ur_Amit_01)
     ‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
     ‣ **ʟᴀɴɢᴜᴀɢᴇ** : [**ᴘʏᴛʜᴏɴ 3**](https://www.python.org/download/releases/3.0/)
-    ‣ **ʙᴜɪʟᴅ sᴛᴀᴛᴜs** : ᴠ2.7.1 [**sᴛᴀʙʟᴇ**]
-    ‣ **ᴜᴘᴛɪᴍᴇ** : {uptime}**"""
+    ‣ **ʙᴜɪʟᴅ sᴛᴀᴛᴜs** : ᴠ2\\.7\\.1 [**sᴛᴀʙʟᴇ**]
+    ‣ **ᴜᴘᴛɪᴍᴇ** : {uptime}"""
 
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="back")]
     ])
     try:
-        await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup, parse_mode="Markdown")
+        await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup, parse_mode="MarkdownV2")
     except Exception as e:
         logger.error(f"Error editing about text: {e}")
 
