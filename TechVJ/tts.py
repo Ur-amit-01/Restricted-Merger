@@ -6,11 +6,11 @@ from gtts import gTTS
 from pyrogram import Client, filters
 from pyrogram.types import Message
 
-
+# Convert text to audio
 def convert(text):
     audio = BytesIO()
-    i = Translator().translate(text, dest="en")
-    lang = i.src
+    translated = Translator().translate(text, dest="en")
+    lang = translated.src
     tts = gTTS(text, lang=lang)
     audio.name = lang + ".mp3"
     tts.write_to_fp(audio)
@@ -18,22 +18,26 @@ def convert(text):
 
 
 @Client.on_message(filters.command("tts"))
-async def text_to_speech(bot, message: Message):
-    vj = await bot.ask(chat_id = message.from_user.id, text = "Now send me your text.")
-    if vj.text:
-        m = await vj.reply_text("Processing")
-        text = vj.text
-        try:
+async def text_to_speech(client: Client, message: Message):
+    try:
+        vj = await client.ask(
+            chat_id=message.from_user.id,
+            text="Now send me your text.",
+            filters=filters.text,
+        )
+
+        if vj.text:
+            m = await vj.reply_text("Processing...")
+            text = vj.text
             loop = get_running_loop()
             audio = await loop.run_in_executor(None, convert, text)
-            await vj.reply_audio(audio)
+
+            await vj.reply_audio(audio, caption="Here is your TTS audio!")
             await m.delete()
             audio.close()
-        except Exception as e:
-            await m.edit(e)
-            e = traceback.format_exc()
-            print(e)
-    else:
-        await vj.reply_text("Send me only text Buddy.")
-
-
+        else:
+            await vj.reply_text("Send me text only, buddy!")
+    except Exception as e:
+        error_message = traceback.format_exc()
+        print(error_message)
+        await message.reply_text(f"An error occurred:\n\n{e}")
