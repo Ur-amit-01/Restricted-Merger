@@ -17,7 +17,7 @@ HELP_TXT = """**💡 Help Section**
 
 ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
 
-‣ **ᴍʏ ɴᴀᴍᴇ** : [**{callback_query.from_user.first_name}**](https://t.me/{callback_query.from_user.username})
+‣ **ᴍʏ ɴᴀᴍᴇ** : **{bot_name}**
 ‣ **ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ** : [**ᴛʜɪs ᴘᴇʀsᴏɴ**](tg://settings)
 ‣ **ᴅᴇᴠᴇʟᴏᴘᴇʀ** : [**ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝**](https://t.me/Ur_Amit_01)
 ‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
