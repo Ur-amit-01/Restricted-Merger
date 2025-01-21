@@ -84,7 +84,7 @@ async def progress(current, total, message, type):
                          f" **📦 Processed**: {processed:.2f}MB/{total_size:.2f}MB\n"
                          f" **⚡ Speed**: {speed:.2f} MB/s\n"
                          f" **⏱️ Time Elapsed**: {formatted_time}\n"
-                         f"```"))
+                         f"```")
         
         # Update the message with the progress
         if percent % 5 == 0:  # Update every 5% for smoother experience
