@@ -114,69 +114,7 @@ async def send_start(client: Client, message: Message):
         "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
         "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
-    ])
     await message.reply_text(start_text, reply_markup=reply_markup)
-
-
-@Client.on_callback_query(filters.regex("about"))
-async def about_callback(client: Client, callback_query):
-    try:
-        uptime = get_uptime()
-        ABOUT_TXT_MSG = ABOUT_TXT.format(uptime=uptime)
-        reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="back")]
-        ])
-
-        await callback_query.message.edit_text(
-            ABOUT_TXT_MSG,
-            reply_markup=reply_markup,
-            disable_web_page_preview=True
-        )
-    except Exception as e:
-        logger.error(f"Error in 'about_callback': {e}")
-        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
-
-
-ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
-
-• ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
-• ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
-• ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
-⏳ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
-
-#🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺#
-
-@Client.on_callback_query(filters.regex("help"))
-async def help_callback(client: Client, callback_query):
-    logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
-    help_text = (
-        "**📖 Help Menu:**\n\n"
-        "Here’s how you can use me:\n"
-        "1. Send me a Telegram post link to download restricted content.\n"
-        "2. Merge PDFs by sending me multiple PDF files.\n\n"
-        "Need more assistance? Feel free to ask!"
-    )
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔙 Back", callback_data="back")]
-    ])
-    await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
-
-
-@Client.on_callback_query(filters.regex("back"))
-async def back_callback(client: Client, callback_query):
-    logger.info(f"Back callback triggered by {callback_query.from_user.id}")  # Log the callback query
-    start_text = (
-        f"> **✨👋🏻 Hey {callback_query.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-    )
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
-    ])
-    await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
-
 
 #————————————————————————————————————————————————————————————————————————————————————————————
 
