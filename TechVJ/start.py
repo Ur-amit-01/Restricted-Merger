@@ -124,7 +124,7 @@ async def send_start(client: Client, message: Message):
 async def about_callback(client: Client, callback_query):
     try:
         uptime = get_uptime()
-        ABOUT_TXT_MSG = ABOUT_TXT
+        ABOUT_TXT_MSG = ABOUT_TXT.format(uptime=uptime)
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("🔙 Back", callback_data="back")]
         ])
