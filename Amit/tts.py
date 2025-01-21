@@ -2,7 +2,10 @@ from pyrogram import Client, filters
 from gtts import gTTS
 from io import BytesIO
 
-@app.on_message(filters.command("tts"))
+# Initialize your client (bot)
+client = Client("my_bot")
+
+@client.on_message(filters.command("tts"))
 async def tts_command(client, message):
     # Extract the text after the command
     text = message.text[5:].strip()
