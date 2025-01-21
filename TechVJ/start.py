@@ -79,7 +79,7 @@ async def progress(current, total, message, type):
         
         # Update progress message in file
         with open(f'{message.id}{type}status.txt', "w") as fileup:
-            fileup.write(f"**📊 Progress**: {percent:.1f}%\n"
+            fileup.write(f"**📈 Progress**: {percent:.1f}%\n"
                          f"**📦 Processed**: {processed:.2f}MB/{total_size:.2f}MB\n"
                          f"**⚡ Speed**: {speed:.2f} MB/s\n"
                          f"**⏱️ Time Elapsed**: {formatted_time}\n")
@@ -89,7 +89,7 @@ async def progress(current, total, message, type):
             try:
                 await message.edit_text(
                     f"**🚀 Task Progress:**\n"
-                    f"📊 Progress: {percent:.1f}%\n"
+                    f"📈 Progress: {percent:.1f}%\n"
                     f"📦 Processed: {processed:.2f}MB of {total_size:.2f}MB\n"
                     f"⚡ Speed: {speed:.2f} MB/s\n"
                     f"⏱️ Time Elapsed: {formatted_time}"
