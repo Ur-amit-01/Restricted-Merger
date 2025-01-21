@@ -23,9 +23,7 @@ class Bot(Client):
 
     async def start(self):
         await super().start()
-        logger.info("📀 Bot Started ⚡️ Powered By @Ur_amit_01 🚀
-
-")
+        logger.info("📀 Bot Started ⚡️ Powered By @Ur_amit_01 🚀")
 
     async def stop(self, *args):
         await super().stop()
