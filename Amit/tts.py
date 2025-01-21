@@ -2,17 +2,6 @@ from pyrogram import Client, filters
 from gtts import gTTS
 from io import BytesIO
 
-# Replace with your bot's token
-BOT_TOKEN = "BOT_TOJEN"
-API_ID = 123456  # Replace with your API ID
-API_HASH = "your_api_hash"  # Replace with your API Hash
-
-app = Client("tts_bot", bot_token=BOT_TOKEN, api_id=API_ID, api_hash=API_HASH)
-
-@app.on_message(filters.command("start"))
-async def start_command(client, message):
-    await message.reply_text("Hello! Send the /tts command followed by text, and I'll convert it to speech!")
-
 @app.on_message(filters.command("tts"))
 async def tts_command(client, message):
     # Extract the text after the command
@@ -39,6 +28,3 @@ async def tts_command(client, message):
     finally:
         # Clean up memory
         audio.close()
-
-# Run the bot
-app.run()
