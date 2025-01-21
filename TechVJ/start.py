@@ -138,15 +138,12 @@ async def about_callback(client: Client, callback_query):
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
 
 
-ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
+ABOUT_TXT = """**[ MY ᴅᴇᴛᴀɪʟꜱ ]**
 
-‣ ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
-‣ ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
-‣ ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
-‣ ʟɪʙʀᴀʀʏ : [ᴘʏʀᴏɢʀᴀᴍ](https://docs.pyrogram.org/)
-‣ ʟᴀɴɢᴜᴀɢᴇ : [ᴘʏᴛʜᴏɴ 3](https://www.python.org/download/releases/3.0/)
-‣ ʙᴜɪʟᴅ sᴛᴀᴛᴜs : ᴠ2.7.1 [sᴛᴀʙʟᴇ]
-‣ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
+👤 ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
+🥰 ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
+💻 ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
+⏳ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
 
 #🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺#
 
