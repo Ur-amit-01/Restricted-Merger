@@ -7,7 +7,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
-from TechVJ.strings import HELP_TXT
+from TechVJ.strings import HELP_TXT, ABOUT_TXT
 
 start_time = time.time()
 logger = logging.getLogger(__name__)
@@ -123,25 +123,23 @@ async def send_start(client: Client, message: Message):
 
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
-    logger.info(f"About callback triggered by {callback_query.from_user.id}")  # Log the callback query
-    uptime = get_uptime()  # Get the bot's uptime
-    ABOUT_TXT = f"""⍟───[ MY DETAILS ]───⍟
-
-    ‣ MY NAME : {callback_query.from_user.first_name}
-    ‣ MY BEST FRIEND : This Person
-    ‣ DEVELOPER : HMIt Singh
-    ‣ LIBRARY : Pyrogram
-    ‣ LANGUAGE : Python 3
-    ‣ BUILD STATUS : v2.7.1 Stable
-    ‣ UPTIME : {uptime}"""
-
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔙 Back", callback_data="back")]
-    ])
     try:
-        await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup)
+        bot_info = await client.get_me()
+        bot_name = f"{bot_info.first_name} (https://t.me/{bot_info.username})"
+        uptime = get_uptime()
+        ABOUT_TXT_MSG = ABOUT_TXT.format(bot_name=bot_name, uptime=uptime)
+
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔙 Back", callback_data="back")]
+        ])
+
+        await callback_query.message.edit_text(
+            ABOUT_TXT_MSG,
+            reply_markup=reply_markup
+        )
     except Exception as e:
-        logger.error(f"Error editing about text: {e}")
+        logger.error(f"Error in 'about_callback': {e}")
+        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
 
 
 @Client.on_callback_query(filters.regex("help"))
