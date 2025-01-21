@@ -9,13 +9,9 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
 
 start_time = time.time()
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
     
-SESSION_STRING = os.environ.get("SESSION_STRING", "")
-
-class batch_temp(object):
-    IS_BATCH = {}
-
 def get_uptime():
     uptime_seconds = time.time() - start_time
     days = int(uptime_seconds // (24 * 3600))
@@ -24,6 +20,93 @@ def get_uptime():
     seconds = int(uptime_seconds % 60)
     return f"{days}d {hours}h {minutes}m {seconds}s"
 
+ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
+
+• ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
+• ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
+• ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
+⏳ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
+    
+@Client.on_message(filters.command("start"))
+async def send_start(client: Client, message: Message):
+    logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
+    start_text = (
+        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+    )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
+    ])
+    await message.reply_text(start_text, reply_markup=reply_markup)
+
+
+@Client.on_callback_query(filters.regex("about"))
+async def about_callback(client: Client, callback_query):
+    try:
+        await callback_query.answer()  # Acknowledge the callback
+        uptime = get_uptime()
+        ABOUT_TXT_MSG = ABOUT_TXT.format(uptime=uptime)
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔙 Back", callback_data="back")]
+        ])
+        await callback_query.message.edit_text(
+            ABOUT_TXT_MSG,
+            reply_markup=reply_markup,
+            disable_web_page_preview=True
+        )
+    except Exception as e:
+        logger.error(f"Error in 'about_callback': {e}")
+        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+
+@Client.on_callback_query(filters.regex("help"))
+async def help_callback(client: Client, callback_query):
+    try:
+        await callback_query.answer()  # Acknowledge the callback
+        logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
+        help_text = (
+            "**📖 Help Menu:**\n\n"
+            "Here’s how you can use me:\n"
+            "1. Send me a Telegram post link to download restricted content.\n"
+            "2. Merge PDFs by sending me multiple PDF files.\n\n"
+            "Need more assistance? Feel free to ask!"
+        )
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔙 Back", callback_data="back")]
+        ])
+        await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
+    except Exception as e:
+        logger.error(f"Error in 'help_callback': {e}")
+        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+
+@Client.on_callback_query(filters.regex("back"))
+async def back_callback(client: Client, callback_query):
+    try:
+        await callback_query.answer()  # Acknowledge the callback
+        logger.info(f"Back callback triggered by {callback_query.from_user.id}")  # Log the callback query
+        start_text = (
+            f"> **✨👋🏻 Hey {callback_query.from_user.mention} !!**\n\n"
+            "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+            "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+        )
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
+        ])
+        await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
+    except Exception as e:
+        logger.error(f"Error in 'back_callback': {e}")
+        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+
+#————————————————————————————————————————————————————————————————————————————————————————————
+
+
+SESSION_STRING = os.environ.get("SESSION_STRING", "")
+
+class batch_temp(object):
+    IS_BATCH = {}
 
 async def downstatus(client, statusfile, message, chat):
     while True:
@@ -101,23 +184,7 @@ async def progress(current, total, message, type):
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
 
-#————————————————————————————————————————————————————————————————————————————————————————————import logging
-
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-@Client.on_message(filters.command(["start"]))
-async def send_start(client: Client, message: Message):
-    logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
-    start_text = (
-        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-    )
-    await message.reply_text(start_text)
-
 #————————————————————————————————————————————————————————————————————————————————————————————
-
 
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
@@ -127,7 +194,6 @@ async def send_cancel(client: Client, message: Message):
         chat_id=message.chat.id,
         text="**Batch Successfully Cancelled.**"
     )
-
 
 @Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
