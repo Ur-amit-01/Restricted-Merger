@@ -7,7 +7,6 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
-from TechVJ.strings import HELP_TXT, ABOUT_TXT
 
 start_time = time.time()
 logger = logging.getLogger(__name__)
@@ -141,6 +140,16 @@ async def about_callback(client: Client, callback_query):
         logger.error(f"Error in 'about_callback': {e}")
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
 
+
+ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
+
+‣ **ᴍʏ ɴᴀᴍᴇ** : **{bot_name}**
+‣ **ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ** : [**ᴛʜɪs ᴘᴇʀsᴏɴ**](tg://settings)
+‣ **ᴅᴇᴠᴇʟᴏᴘᴇʀ** : [**ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝**](https://t.me/Ur_Amit_01)
+‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
+‣ **ʟᴀɴɢᴜᴀɢᴇ** : [**ᴘʏᴛʜᴏɴ 3**](https://www.python.org/download/releases/3.0/)
+‣ **ʙᴜɪʟᴅ sᴛᴀᴛᴜs** : ᴠ2.7.1 [**sᴛᴀʙʟᴇ**]
+‣ **ᴜᴘᴛɪᴍᴇ** : **{uptime}**"""
 
 @Client.on_callback_query(filters.regex("help"))
 async def help_callback(client: Client, callback_query):
