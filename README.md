@@ -1,12 +1,6 @@
 # AMIT Save Restricted Bot
 
-*A Telegram Bot, Which can send you restricted content by it's post link with <b>login feature</b>*
-
----
-
-<b>Watch Video Tutorial - [Click Here](https://youtu.be/BFEvSX5vIMg)</b>
-
----
+*A Telegram Bot, Which can send you restricted content by it's post link.*
 
 ## Variables
 
