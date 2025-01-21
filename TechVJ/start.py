@@ -123,11 +123,8 @@ async def send_start(client: Client, message: Message):
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
     try:
-        bot_info = await client.get_me()
-        bot_name = f"{bot_info.first_name} (https://t.me/{bot_info.username})"
         uptime = get_uptime()
-        ABOUT_TXT_MSG = ABOUT_TXT.format(bot_name=bot_name, uptime=uptime)
-
+        ABOUT_TXT_MSG = ABOUT_TXT.format(uptime=uptime)
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("🔙 Back", callback_data="back")]
         ])
@@ -143,7 +140,7 @@ async def about_callback(client: Client, callback_query):
 
 ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
 
-‣ **ᴍʏ ɴᴀᴍᴇ** : **{bot_name}**
+‣ **ᴍʏ ɴᴀᴍᴇ** : [**z900 ⚝**](https://t.me/Z900_robot)
 ‣ **ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ** : [**ᴛʜɪs ᴘᴇʀsᴏɴ**](tg://settings)
 ‣ **ᴅᴇᴠᴇʟᴏᴘᴇʀ** : [**ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝**](https://t.me/Ur_Amit_01)
 ‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
