@@ -125,21 +125,21 @@ async def send_start(client: Client, message: Message):
 async def about_callback(client: Client, callback_query):
     logger.info(f"About callback triggered by {callback_query.from_user.id}")  # Log the callback query
     uptime = get_uptime()  # Get the bot's uptime
-    ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
+    ABOUT_TXT = f"""⍟───[ MY DETAILS ]───⍟
 
-    ‣ **ᴍʏ ɴᴀᴍᴇ** : [**{callback_query.from_user.first_name}**](https://t.me/{callback_query.from_user.username})
-    ‣ **ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ** : [**ᴛʜɪs ᴘᴇʀsᴏɴ**](tg://settings)
-    ‣ **ᴅᴇᴠᴇʟᴏᴘᴇʀ** : [**ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝**](https://t.me/Ur_Amit_01)
-    ‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
-    ‣ **ʟᴀɴɢᴜᴀɢᴇ** : [**ᴘʏᴛʜᴏɴ 3**](https://www.python.org/download/releases/3.0/)
-    ‣ **ʙᴜɪʟᴅ sᴛᴀᴛᴜs** : ᴠ2\\.7\\.1 [**sᴛᴀʙʟᴇ**]
-    ‣ **ᴜᴘᴛɪᴍᴇ** : {uptime}"""
+    ‣ MY NAME : {callback_query.from_user.first_name}
+    ‣ MY BEST FRIEND : This Person
+    ‣ DEVELOPER : HMIt Singh
+    ‣ LIBRARY : Pyrogram
+    ‣ LANGUAGE : Python 3
+    ‣ BUILD STATUS : v2.7.1 Stable
+    ‣ UPTIME : {uptime}"""
 
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="back")]
     ])
     try:
-        await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup, parse_mode="MarkdownV2")
+        await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup)
     except Exception as e:
         logger.error(f"Error editing about text: {e}")
 
