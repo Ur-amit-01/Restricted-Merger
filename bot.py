@@ -16,14 +16,16 @@ class Bot(Client):
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
-            plugins=dict(root="TechVJ"),
+            plugins=dict(root="Amit"),
             workers=50,
             sleep_threshold=10
         )
 
     async def start(self):
         await super().start()
-        logger.info("Bot Started Powered By @VJ_Botz")
+        logger.info("📀 Bot Started ⚡️ Powered By @Ur_amit_01 🚀
+
+")
 
     async def stop(self, *args):
         await super().stop()
