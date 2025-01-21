@@ -20,7 +20,7 @@ async def start_file_collection(client: Client, message: Message):
     user_id = message.from_user.id
     user_file_metadata[user_id] = []  # Reset file list for the user
     await message.reply_text(
-        "📤 Upload files in sequence, type /done ✅, and get your merged PDF !! 🚀"
+        "**📤 Uᴘʟᴏᴀᴅ ʏᴏᴜʀ ғɪʟᴇs ɪɴ sᴇᴏ̨ᴜᴇɴᴄᴇ, ᴛʏᴘᴇ /ᴅᴏɴᴇ ✅, ᴀɴᴅ ɢᴇᴛ ʏᴏᴜʀ ᴍᴇʀɢᴇᴅ PDF !! 🧾**"
     )
 
 
@@ -54,8 +54,8 @@ async def handle_pdf_metadata(client: Client, message: Message):
         }
     )
     await message.reply_text(
-        f"➕ PDF added to the list! 📄 ({len(user_file_metadata[user_id])} files added so far.)\n"
-        "Send more files or use /done ✅ to merge them."
+        f"**➕ PDF ᴀᴅᴅᴇᴅ ᴛᴏ ᴛʜᴇ ʟɪsᴛ! 📄 ({len(user_file_metadata[user_id])} files added so far.)**\n"
+        "**Sᴇɴᴅ ᴍᴏʀᴇ ғɪʟᴇs ᴏʀ ᴜsᴇ /ᴅᴏɴᴇ ✅ ᴛᴏ ᴍᴇʀɢᴇ ᴛʜᴇᴍ.**"
     )
 
 
@@ -64,7 +64,7 @@ async def handle_image_metadata(client: Client, message: Message):
     user_id = message.from_user.id
 
     if user_id not in user_file_metadata:
-        await message.reply_text("⏳ Start the merging process first with /merge 🔄.")
+        await message.reply_text("**⏳ Sᴛᴀʀᴛ ᴛʜᴇ ᴍᴇʀɢɪɴɢ ᴘʀᴏᴄᴇss ғɪʀsᴛ ᴡɪᴛʜ /merge 🔄.**")
         return
 
     user_file_metadata[user_id].append(
@@ -85,7 +85,7 @@ async def merge_files(client: Client, message: Message):
     user_id = message.from_user.id
 
     if user_id not in user_file_metadata or not user_file_metadata[user_id]:
-        await message.reply_text("⚠️ You haven't added any files yet. Use /merge to start.")
+        await message.reply_text("**⚠️ Yᴏᴜ ʜᴀᴠᴇɴ'ᴛ ᴀᴅᴅᴇᴅ ᴀɴʏ ғɪʟᴇs ʏᴇᴛ. Usᴇ /merge ᴛᴏ sᴛᴀʀᴛ.**")
         return
 
     await message.reply_text("✍️ Type a name for your merged PDF 📄.")
