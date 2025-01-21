@@ -1,7 +1,3 @@
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
 HELP_TXT = """**💡 Help Section**
 
 **1. 🔒 Private Chats**
@@ -17,6 +13,14 @@ HELP_TXT = """**💡 Help Section**
 
 > **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**"""
 
-# Don't Remove Credit Tg - @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot https://youtube.com/@Tech_VJ
-# Ask Doubt on telegram @KingVJ01
+#------------------- ABOUT -------------------#
+
+ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
+
+‣ **ᴍʏ ɴᴀᴍᴇ** : [**{callback_query.from_user.first_name}**](https://t.me/{callback_query.from_user.username})
+‣ **ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ** : [**ᴛʜɪs ᴘᴇʀsᴏɴ**](tg://settings)
+‣ **ᴅᴇᴠᴇʟᴏᴘᴇʀ** : [**ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝**](https://t.me/Ur_Amit_01)
+‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
+‣ **ʟᴀɴɢᴜᴀɢᴇ** : [**ᴘʏᴛʜᴏɴ 3**](https://www.python.org/download/releases/3.0/)
+‣ **ʙᴜɪʟᴅ sᴛᴀᴛᴜs** : ᴠ2.7.1 [**sᴛᴀʙʟᴇ**]
+‣ **ᴜᴘᴛɪᴍᴇ** : {uptime}**"""
