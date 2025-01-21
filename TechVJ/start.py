@@ -133,7 +133,7 @@ async def about_callback(client: Client, callback_query):
 
         await callback_query.message.edit_text(
             ABOUT_TXT_MSG,
-            reply_markup=reply_markup
+            reply_markup=reply_markup,
             disable_web_page_preview=True
         )
     except Exception as e:
