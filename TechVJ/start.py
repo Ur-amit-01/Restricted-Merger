@@ -124,7 +124,7 @@ async def send_start(client: Client, message: Message):
 async def about_callback(client: Client, callback_query):
     try:
         uptime = get_uptime()
-        ABOUT_TXT_MSG = ABOUT_TXT.format(uptime=uptime)
+        ABOUT_TXT_MSG = ABOUT_TXT
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("🔙 Back", callback_data="back")]
         ])
@@ -146,7 +146,9 @@ ABOUT_TXT = f"""⍟───[ **MY ᴅᴇᴛᴀɪʟꜱ** ]───⍟
 ‣ **ʟɪʙʀᴀʀʏ** : [**ᴘʏʀᴏɢʀᴀᴍ**](https://docs.pyrogram.org/)
 ‣ **ʟᴀɴɢᴜᴀɢᴇ** : [**ᴘʏᴛʜᴏɴ 3**](https://www.python.org/download/releases/3.0/)
 ‣ **ʙᴜɪʟᴅ sᴛᴀᴛᴜs** : ᴠ2.7.1 [**sᴛᴀʙʟᴇ**]
-‣ **ᴜᴘᴛɪᴍᴇ** : **{uptime}**"""
+‣ **ᴜᴘᴛɪᴍᴇ** : **{get_uptime}**"""
+
+#🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺🌺#
 
 @Client.on_callback_query(filters.regex("help"))
 async def help_callback(client: Client, callback_query):
