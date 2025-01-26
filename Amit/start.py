@@ -44,30 +44,28 @@ async def send_start(client: Client, message: Message):
 @Client.on_callback_query(filters.regex("request"))
 async def request_info_callback(client: Client, callback_query):
     try:
-        await callback_query.answer()
-        
-        image_url = "https://i.imghippo.com/files/jRs5310zZw.jpg"
+        await callback_query.answer()  # Acknowledge the callback
+        logger.info(f"Request callback triggered by {callback_query.from_user.id}")  # Log the callback query
         request_text = (
             f"**Hello {callback_query.from_user.mention} 👋**\n\n"
             "**I am a Join Request Acceptor Bot. I can accept all old pending join requests.**\n\n"
-            "**For all pending join requests, use the `/accept` command.**"
+            "** Give me all admin rights in your channel and send `/accept` command.**"
         )
         reply_markup = InlineKeyboardMarkup([
             [
-                InlineKeyboardButton("❣️ Developer", url="https://t.me/Kingvj01"),
-                InlineKeyboardButton("🔙 Back", callback_data="back")
+                InlineKeyboardButton("❣️ Developer", url="https://t.me/ur_amit_01"),
+                InlineKeyboardButton("🔙 Back", callback_data="help")
             ]
         ])
-        
-        await callback_query.message.edit_media(
-            media=image_url,
-            caption=request_text,
-            reply_markup=reply_markup
+        await callback_query.message.edit_text(
+            request_text, 
+            reply_markup=reply_markup, 
+            disable_web_page_preview=True
         )
     except Exception as e:
-        logger.error(f"Error: {e}")
+        logger.error(f"Error in 'request_info_callback': {e}")
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
-
+        
 
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
