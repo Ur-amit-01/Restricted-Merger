@@ -26,7 +26,7 @@ async def accept(client, message):
     
     try:
         # Check if the session account is an admin
-        admins = await acc.get_chat_administrators(channel_id)
+        admins = await acc.get_chat_members(channel_id, filter="administrators")
         is_admin = any(admin.user.id == acc.me.id for admin in admins)
         
         if not is_admin:
@@ -86,3 +86,4 @@ async def approve_new(client, m):
     except Exception as e:
         print(f"⚠️ {str(e)}")
         pass
+
