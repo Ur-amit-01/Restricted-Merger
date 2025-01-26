@@ -92,14 +92,11 @@ async def help_callback(client: Client, callback_query):
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
         help_text = (
-            "**📖 Help Menu:**\n\n"
-            "Here’s how you can use me:\n"
-            "1. Send me a Telegram post link to download restricted content.\n"
-            "2. Merge PDFs by sending me multiple PDF files.\n\n"
-            "Need more assistance? Feel free to ask!"
+            "**📖 My Modules **\n\n"
+            "**Select from the options below.**\n"
         )
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="back"), InlineKeyboardButton("Request ✨", callback_data="request")]
+            [InlineKeyboardButton("🔙 Back", callback_data="back"), InlineKeyboardButton("Request acceptor ", callback_data="request")]
         ])
         await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
     except Exception as e:
