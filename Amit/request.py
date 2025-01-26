@@ -13,7 +13,7 @@ async def accept(client, message):
     # Check if the command is issued in a private chat (DM)
     if message.chat.type == enums.ChatType.PRIVATE:
         print("Command issued in DM, sending reply...")
-        return await message.reply("🚫 **This command works only in channels.**")
+        return await message.reply("🚫 **This command works in channels only.**")
     
     # Proceed if the command is issued in a channel
     channel_id = message.chat.id
@@ -23,7 +23,7 @@ async def accept(client, message):
         acc = Client("joinrequest", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
         await acc.connect()
     except:
-        return await show.edit("❌ **Your login session has expired. Please update the session string and try again.**")
+        return await show.edit("❌ **Login session has expired. Please update the session string and try again.**")
     
     # Directly accept join requests without needing a forwarded message
     msg = await show.edit("✅ **Accepting all join requests... Please wait until it's completed.**")
