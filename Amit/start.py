@@ -12,21 +12,6 @@ start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
     
-def get_uptime():
-    uptime_seconds = time.time() - start_time
-    days = int(uptime_seconds // (24 * 3600))
-    hours = int((uptime_seconds % (24 * 3600)) // 3600)
-    minutes = int((uptime_seconds % 3600) // 60)
-    seconds = int(uptime_seconds % 60)
-    return f"{days}d {hours}h {minutes}m {seconds}s"
-
-ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
-
-• ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
-• ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
-• ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
-⏳ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
-    
 @Client.on_message(filters.command("start"))
 async def send_start(client: Client, message: Message):
     logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
@@ -47,14 +32,13 @@ async def request_info_callback(client: Client, callback_query):
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Request callback triggered by {callback_query.from_user.id}")  # Log the callback query
         request_text = (
-            f"> **⚙️ Join request acceptor:**\n\n"
+            f"> **⚙️ Join request acceptor**\n\n"
             "**• I can accept all old pending join requests in your channel. 🤝**\n\n"
             "**• Give me full admin rights in your channel. 🔑**\n\n"
             "**• Send the /accept command to start accepting join requests. ▶️**"
         )
         reply_markup = InlineKeyboardMarkup([
             [
-                InlineKeyboardButton("❣️ Developer", url="https://t.me/ur_amit_01"),
                 InlineKeyboardButton("🔙 Back", callback_data="help")
             ]
         ])
@@ -85,6 +69,21 @@ async def about_callback(client: Client, callback_query):
     except Exception as e:
         logger.error(f"Error in 'about_callback': {e}")
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
+
+• ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
+• ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
+• ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
+⏳ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
+
+def get_uptime():
+    uptime_seconds = time.time() - start_time
+    days = int(uptime_seconds // (24 * 3600))
+    hours = int((uptime_seconds % (24 * 3600)) // 3600)
+    minutes = int((uptime_seconds % 3600) // 60)
+    seconds = int(uptime_seconds % 60)
+    return f"{days}d : {hours}h : {minutes}m : {seconds}s"
 
 
 @Client.on_callback_query(filters.regex("help"))
