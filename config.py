@@ -1,4 +1,5 @@
 import os
+from os import environ
 
 # Bot token @Botfather
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
