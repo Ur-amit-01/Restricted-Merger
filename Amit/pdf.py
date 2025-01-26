@@ -7,15 +7,22 @@ from PIL import Image
 from pyrogram import Client, filters
 from PyPDF2 import PdfMerger
 from pyrogram.types import Message
+from config import API_ID, API_HASH, BOT_TOKEN, NEW_REQ_MODE, SESSION_STRING
 
 logger = logging.getLogger(__name__)
 
-MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
+# Set the file size limit to 50MB
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
 pending_filename_requests = {}
 user_file_metadata = {}  # Store metadata for each user's files
 
+# Your session string for user authentication (replace with your own session string)
+session_string = 'YOUR_SESSION_STRING'
 
-@Client.on_message(filters.command(["merge"]))
+# Use your session string to create the bot client
+app = Client("my_bot", api_id="API_ID", api_hash="API_HASH", session_string=SESSION_STRING)
+
+@app.on_message(filters.command(["merge"]))
 async def start_file_collection(client: Client, message: Message):
     user_id = message.from_user.id
     user_file_metadata[user_id] = []  # Reset file list for the user
@@ -24,7 +31,7 @@ async def start_file_collection(client: Client, message: Message):
     )
 
 
-@Client.on_message(filters.document & filters.private)
+@app.on_message(filters.document & filters.private)
 async def handle_pdf_metadata(client: Client, message: Message):
     user_id = message.from_user.id
 
@@ -43,7 +50,7 @@ async def handle_pdf_metadata(client: Client, message: Message):
         return
 
     if message.document.file_size > MAX_FILE_SIZE:
-        await message.reply_text("🚫 File size is too large! Please send a file under 20MB.")
+        await message.reply_text("🚫 File size is too large! Please send a file under 50MB.")
         return
 
     user_file_metadata[user_id].append(
@@ -59,7 +66,7 @@ async def handle_pdf_metadata(client: Client, message: Message):
     )
 
 
-@Client.on_message(filters.photo & filters.private)
+@app.on_message(filters.photo & filters.private)
 async def handle_image_metadata(client: Client, message: Message):
     user_id = message.from_user.id
 
@@ -80,7 +87,7 @@ async def handle_image_metadata(client: Client, message: Message):
     )
 
 
-@Client.on_message(filters.command(["done"]))
+@app.on_message(filters.command(["done"]))
 async def merge_files(client: Client, message: Message):
     user_id = message.from_user.id
 
@@ -92,7 +99,7 @@ async def merge_files(client: Client, message: Message):
     pending_filename_requests[user_id] = {"filename_request": True}
 
 
-@Client.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
+@app.on_message(filters.text & filters.private & ~filters.regex("https://t.me/"))
 async def handle_filename(client: Client, message: Message):
     user_id = message.from_user.id
 
@@ -180,3 +187,6 @@ async def handle_filename(client: Client, message: Message):
         user_file_metadata.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
 
+
+# Start the bot
+app.run()
