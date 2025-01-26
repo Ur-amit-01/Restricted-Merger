@@ -1,11 +1,11 @@
 import asyncio
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from config import API_ID, API_HASH, BOT_TOKEN
 
 # Hardcoded session string, API ID, and API Hash
-SESSION_STRING = "your_session_string"
-API_ID = "your_api_id"
-API_HASH = "your_api_hash"
+SESSION_STRING = os.environ.get("SESSION_STRING", "")
+
 
 @Client.on_message(filters.command('accept') & filters.private)
 async def accept(client, message):
