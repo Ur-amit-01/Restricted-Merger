@@ -24,25 +24,20 @@ async def accept(client, message):
     except:
         return await show.edit("❌ **Your Login Session Expired. Please update the session string and try again.**")
     
+    # Blindly promote the session account as an admin
     try:
-        # Check if the session account is an admin
-        admins = await acc.get_chat_members(channel_id, filter="administrators")
-        is_admin = any(admin.user.id == acc.me.id for admin in admins)
-        
-        if not is_admin:
-            # Promote the session account as admin if it's not already
-            await acc.promote_chat_member(
-                channel_id,
-                acc.me.id,
-                can_manage_chat=True,
-                can_manage_video_chats=True,
-                can_post_messages=True,
-                can_edit_messages=True,
-                can_delete_messages=True,
-                can_invite_users=True,
-                can_pin_messages=True
-            )
-            await show.edit("✅ **Session account promoted as admin. Starting to accept join requests.**")
+        await acc.promote_chat_member(
+            channel_id,
+            acc.me.id,
+            can_manage_chat=True,
+            can_manage_video_chats=True,
+            can_post_messages=True,
+            can_edit_messages=True,
+            can_delete_messages=True,
+            can_invite_users=True,
+            can_pin_messages=True
+        )
+        await show.edit("✅ **Session account promoted as admin. Starting to accept join requests.**")
     except Exception as e:
         await show.edit(f"⚠️ **Error: {str(e)}**")
         return
@@ -54,7 +49,7 @@ async def accept(client, message):
         while True:
             await acc.approve_all_chat_join_requests(channel_id)
             await asyncio.sleep(1)
-            join_requests = [request async for request in acc.get_chat_join_requests(channel_id)]
+            join_requests = await acc.get_chat_join_requests(channel_id)
             if not join_requests:
                 break
         await msg.edit("🎉 **Successfully accepted all join requests.**")
