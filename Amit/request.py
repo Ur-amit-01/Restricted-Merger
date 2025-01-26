@@ -12,20 +12,43 @@ SESSION_STRING = os.environ.get("SESSION_STRING", "")
 async def accept(client, message):
     # Check if the command is issued in a private chat (DM)
     if message.chat.type == enums.ChatType.PRIVATE:
-        return await message.reply("**This command works only in channels.**")
+        return await message.reply("🚫 **This command works only in channels.**")
     
     # Proceed if the command is issued in a channel
     channel_id = message.chat.id
-    show = await client.send_message(channel_id, "**Please Wait.....**")
+    show = await client.send_message(channel_id, "⏳ **Please Wait.....**")
     
     try:
         acc = Client("joinrequest", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
         await acc.connect()
     except:
-        return await show.edit("**Your Login Session Expired. Please update the session string and try again.**")
+        return await show.edit("❌ **Your Login Session Expired. Please update the session string and try again.**")
     
-    # Directly accept join requests without needing forwarded message
-    msg = await show.edit("**Accepting all join requests... Please wait until it's completed.**")
+    try:
+        # Check if the session account is an admin
+        admins = await acc.get_chat_administrators(channel_id)
+        is_admin = any(admin.user.id == acc.me.id for admin in admins)
+        
+        if not is_admin:
+            # Promote the session account as admin if it's not already
+            await acc.promote_chat_member(
+                channel_id,
+                acc.me.id,
+                can_manage_chat=True,
+                can_manage_video_chats=True,
+                can_post_messages=True,
+                can_edit_messages=True,
+                can_delete_messages=True,
+                can_invite_users=True,
+                can_pin_messages=True
+            )
+            await show.edit("✅ **Session account promoted as admin. Starting to accept join requests.**")
+    except Exception as e:
+        await show.edit(f"⚠️ **Error: {str(e)}**")
+        return
+    
+    # Directly accept join requests without needing a forwarded message
+    msg = await show.edit("✅ **Accepting all join requests... Please wait until it's completed.**")
     
     try:
         while True:
@@ -34,9 +57,16 @@ async def accept(client, message):
             join_requests = [request async for request in acc.get_chat_join_requests(channel_id)]
             if not join_requests:
                 break
-        await msg.edit("**Successfully accepted all join requests.**")
+        await msg.edit("🎉 **Successfully accepted all join requests.**")
     except Exception as e:
-        await msg.edit(f"**An error occurred:** {str(e)}")
+        await msg.edit(f"❌ **An error occurred:** {str(e)}")
+    
+    # After accepting all join requests, make the session account leave the channel
+    try:
+        await acc.leave_chat(channel_id)
+        await msg.edit("👋 **Session account has left the channel.**")
+    except Exception as e:
+        print(f"⚠️ Error while making session account leave the channel: {e}")
 
 
 @Client.on_chat_join_request(filters.group | filters.channel)
@@ -49,12 +79,10 @@ async def approve_new(client, m):
         try:
             await client.send_message(
                 m.from_user.id,
-                "**Hello {}!\nWelcome To {}\n\n__Powered By : @VJ_Botz __**".format(m.from_user.mention, m.chat.title)
+                f"👋 **Hello {m.from_user.mention}!\nWelcome to {m.chat.title}**\n\n__Powered by: @VJ_Botz__"
             )
         except:
             pass
     except Exception as e:
-        print(str(e))
+        print(f"⚠️ {str(e)}")
         pass
-
-
