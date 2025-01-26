@@ -41,22 +41,33 @@ async def send_start(client: Client, message: Message):
     await message.reply_text(start_text, reply_markup=reply_markup)
 
 
-
 @Client.on_callback_query(filters.regex("request"))
-async def request_info_callback(c: Client, q: CallbackQuery):
-    await q.message.edit_media(
-        media=f"https://te.legra.ph/file/119729ea3cdce4fefb6a1.jpg",
-        caption=f"<b>Hello {q.from_user.mention} 👋\n\nI Am Join Request Acceptor Bot. I Can Accept All Old Pending Join Request.\n\nFor All Pending Join Request Use - /accept</b>",
-        reply_markup=InlineKeyboardMarkup(
-            [[
-                InlineKeyboardButton('💝 sᴜʙsᴄʀɪʙᴇ ʏᴏᴜᴛᴜʙᴇ ᴄʜᴀɴɴᴇʟ', url='https://youtube.com/@Tech_VJ')
-            ], [
-                InlineKeyboardButton("❣️ ᴅᴇᴠᴇʟᴏᴘᴇʀ", url='https://t.me/Kingvj01'),
-                InlineKeyboardButton("🔙 Back", callback_data="back")
-            ]]
+async def request_info_callback(client: Client, callback_query):
+    try:
+        await callback_query.answer()  # Acknowledge the callback
+        logger.info(f"Request callback triggered by {callback_query.from_user.id}")  # Log the callback query
+        request_text = (
+            f"**Hello {callback_query.from_user.mention} 👋**\n\n"
+            "I am a Join Request Acceptor Bot. I can accept all old pending join requests.\n\n"
+            "For all pending join requests, use the `/accept` command."
         )
-    )
-    
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("💝 Subscribe YouTube Channel", url="https://youtube.com/@Tech_VJ")],
+            [
+                InlineKeyboardButton("❣️ Developer", url="https://t.me/Kingvj01"),
+                InlineKeyboardButton("🔙 Back", callback_data="back")
+            ]
+        ])
+        await callback_query.message.edit_text(
+            request_text, 
+            reply_markup=reply_markup, 
+            disable_web_page_preview=True
+        )
+    except Exception as e:
+        logger.error(f"Error in 'request_info_callback': {e}")
+        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
     try:
