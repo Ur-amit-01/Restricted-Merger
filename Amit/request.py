@@ -8,9 +8,16 @@ from config import API_ID, API_HASH, BOT_TOKEN, NEW_REQ_MODE
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 
-@Client.on_message(filters.command('accept') & filters.private)
+@Client.on_message(filters.command('accept'))
 async def accept(client, message):
-    show = await message.reply("**Please Wait.....**")
+    # Check if the command is issued in a private chat
+    if message.chat.type == enums.ChatType.PRIVATE:
+        return await message.reply("**This command works only in channels.**")
+    
+    # Proceed if the command is issued in a channel
+    channel_id = message.chat.id
+    show = await client.send_message(channel_id, "**Please Wait.....**")
+    
     try:
         acc = Client("joinrequest", session_string=SESSION_STRING, api_hash=API_HASH, api_id=API_ID)
         await acc.connect()
@@ -18,7 +25,8 @@ async def accept(client, message):
         return await show.edit("**Your Login Session Expired. Please update the session string and try again.**")
     
     show = await show.edit("**Now Forward A Message From Your Channel Or Group With Forward Tag\n\nMake Sure Your Logged In Account Is Admin In That Channel Or Group With Full Rights.**")
-    vj = await client.listen(message.chat.id)
+    vj = await client.listen(channel_id)
+    
     if vj.forward_from_chat and not vj.forward_from_chat.type in [enums.ChatType.PRIVATE, enums.ChatType.BOT]:
         chat_id = vj.forward_from_chat.id
         try:
@@ -28,8 +36,10 @@ async def accept(client, message):
             return
     else:
         return await message.reply("**Message Not Forwarded From Channel Or Group.**")
+    
     await vj.delete()
     msg = await show.edit("**Accepting all join requests... Please wait until it's completed.**")
+    
     try:
         while True:
             await acc.approve_all_chat_join_requests(chat_id)
