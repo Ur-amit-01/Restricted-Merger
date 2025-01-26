@@ -40,8 +40,12 @@ async def accept(client, message):
     except Exception as e:
         await msg.edit(f"**An error occurred:** {str(e)}")
 
+
 @Client.on_chat_join_request(filters.group | filters.channel)
 async def approve_new(client, m):
+    if not NEW_REQ_MODE:
+        return  # If NEW_REQ_MODE is False, the function exits without processing the join request.
+
     try:
         await client.approve_chat_join_request(m.chat.id, m.from_user.id)
         try:
