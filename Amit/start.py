@@ -132,8 +132,9 @@ async def help_callback(client: Client, callback_query):
             "**Choose from the options below.**\n"
         )
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("• Join Request acceptor • ", callback_data="request")],
-            [InlineKeyboardButton("🔙 Back", callback_data="back")]
+            [InlineKeyboardButton("• Join Request acceptor •", callback_data="request")],
+            [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="mergehelp")],
+            [InlineKeyboardButton("🔙 Back 🔙", callback_data="back")]
         ])
         await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
     except Exception as e:
