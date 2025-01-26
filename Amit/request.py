@@ -10,7 +10,7 @@ SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 @Client.on_message(filters.command('accept'))
 async def accept(client, message):
-    # Check if the command is issued in a private chat
+    # Check if the command is issued in a private chat (DM)
     if message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply("**This command works only in channels.**")
     
@@ -24,27 +24,14 @@ async def accept(client, message):
     except:
         return await show.edit("**Your Login Session Expired. Please update the session string and try again.**")
     
-    show = await show.edit("**Now Forward A Message From Your Channel Or Group With Forward Tag\n\nMake Sure Your Logged In Account Is Admin In That Channel Or Group With Full Rights.**")
-    vj = await client.listen(channel_id)
-    
-    if vj.forward_from_chat and not vj.forward_from_chat.type in [enums.ChatType.PRIVATE, enums.ChatType.BOT]:
-        chat_id = vj.forward_from_chat.id
-        try:
-            info = await acc.get_chat(chat_id)
-        except:
-            await show.edit("**Error - Make Sure Your Logged In Account Is Admin In This Channel Or Group With Rights.**")
-            return
-    else:
-        return await message.reply("**Message Not Forwarded From Channel Or Group.**")
-    
-    await vj.delete()
+    # Directly accept join requests without needing forwarded message
     msg = await show.edit("**Accepting all join requests... Please wait until it's completed.**")
     
     try:
         while True:
-            await acc.approve_all_chat_join_requests(chat_id)
+            await acc.approve_all_chat_join_requests(channel_id)
             await asyncio.sleep(1)
-            join_requests = [request async for request in acc.get_chat_join_requests(chat_id)]
+            join_requests = [request async for request in acc.get_chat_join_requests(channel_id)]
             if not join_requests:
                 break
         await msg.edit("**Successfully accepted all join requests.**")
@@ -69,3 +56,5 @@ async def approve_new(client, m):
     except Exception as e:
         print(str(e))
         pass
+
+
