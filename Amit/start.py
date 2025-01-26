@@ -58,24 +58,24 @@ async def mergehelp_callback(client: Client, callback_query):
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Mergehelp callback triggered by {callback_query.from_user.id}")  # Log the callback query
         mergehelp_text = """
-    **> ⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
+    > **⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
-    **📄 /merge** - Start the merging process. 
-    **⏳ Upload your files (PDFs or Images) in sequence.**
-    **✅ Type /done** to merge the uploaded files into a single PDF.
+**📄 /merge** - Start the merging process. 
+**⏳ Upload your files (PDFs or Images) in sequence.**
+**✅ Type /done** to merge the uploaded files into a single PDF.
 
-    **🔹 Supported Files:**
-    - **📑 PDFs** - You can add multiple PDF files (up to 20 files).
-    - **🖼️ Images** - Add images that will be converted to PDF pages.
+**🔹 Supported Files:**
+- **📑 PDFs** - You can add multiple PDF files (up to 20 files).
+- **🖼️ Images** - Add images that will be converted to PDF pages.
 
-    **⚠️ File Restrictions:**
-    - **Max File Size:** 20MB
-    - **Max Files per Merge:** 20 files
+**⚠️ File Restrictions:**
+- **Max File Size:** 20MB
+- **Max Files per Merge:** 20 files
 
-    **🔸 Customizations:**
-    - **📝 Filename:** Simply type filename 
-    - **📸 Thumbnail:** (Filename) -t (Thumbnail link)
-    """
+**🔸 Customizations:**
+- **📝 Filename:** Simply type filename 
+- **📸 Thumbnail:** (Filename) -t (Thumbnail link)
+"""
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("🔙 Back", callback_data="help")]
         ])
