@@ -187,6 +187,3 @@ async def handle_filename(client: Client, message: Message):
         user_file_metadata.pop(user_id, None)
         pending_filename_requests.pop(user_id, None)
 
-
-# Start the bot
-app.run()
