@@ -1,7 +1,7 @@
 import asyncio
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from config import API_ID, API_HASH, BOT_TOKEN
+from config import API_ID, API_HASH, BOT_TOKEN, NEW_REQ_MODE
 
 # Hardcoded session string, API ID, and API Hash
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
