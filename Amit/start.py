@@ -33,9 +33,9 @@ async def request_info_callback(client: Client, callback_query):
         logger.info(f"Request callback triggered by {callback_query.from_user.id}")  # Log the callback query
         request_text = (
             f"> **⚙️ Join request acceptor**\n\n"
-            "**• I can accept all old pending join requests in your channel. 🤝**\n\n"
-            "**• Promote @Axa_bachha and the bot with admin rights in your channel. 🔑**\n\n"
-            "**• Send the /accept command to start accepting join requests. ▶️**"
+            "**• I can accept all pending join requests in your channel. 🤝**\n\n"
+            "**• Promote @Axa_bachha and @Z900_RoBot with full admin rights in your channel. 🔑**\n\n"
+            "**• Send /accept command to start accepting join requests. ▶️**"
         )
         reply_markup = InlineKeyboardMarkup([
             [
