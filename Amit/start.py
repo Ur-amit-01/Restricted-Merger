@@ -47,7 +47,8 @@ async def request_info_callback(client: Client, callback_query):
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Request callback triggered by {callback_query.from_user.id}")  # Log the callback query
         request_text = (
-            f"**• I can accept all old pending join requests in your channel. 🤝**\n\n"
+            f"> **⚙️ Join request acceptor:**\n\n"
+            "**• I can accept all old pending join requests in your channel. 🤝**\n\n"
             "**• Give me full admin rights in your channel. 🔑**\n\n"
             "**• Send the /accept command to start accepting join requests. ▶️**"
         )
