@@ -92,11 +92,12 @@ async def help_callback(client: Client, callback_query):
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
         help_text = (
-            "**📖 My Modules **\n\n"
-            "**Select from the options below.**\n"
+            "**📖 Help section**\n\n"
+            "**Choose from the options below.**\n"
         )
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="back"), InlineKeyboardButton("Request acceptor ", callback_data="request")]
+            [InlineKeyboardButton("• Join Request acceptor • ", callback_data="request")]
+            [InlineKeyboardButton("🔙 Back", callback_data="back")]
         ])
         await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
     except Exception as e:
