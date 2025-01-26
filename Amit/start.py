@@ -6,7 +6,7 @@ import pyrogram
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE
+from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE, SESSION_STRING
 
 start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
@@ -125,9 +125,6 @@ async def back_callback(client: Client, callback_query):
 
 
 #————————————————————————————————————————————————————————————————————————————————————————————
-
-
-SESSION_STRING = os.environ.get("SESSION_STRING", "")
 
 class batch_temp(object):
     IS_BATCH = {}
