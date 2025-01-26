@@ -41,6 +41,22 @@ async def send_start(client: Client, message: Message):
     await message.reply_text(start_text, reply_markup=reply_markup)
 
 
+
+@Client.on_callback_query(filters.regex("request"))
+async def request_info_callback(c: Client, q: CallbackQuery):
+    await q.message.edit_media(
+        media=f"https://te.legra.ph/file/119729ea3cdce4fefb6a1.jpg",
+        caption=f"<b>Hello {q.from_user.mention} 👋\n\nI Am Join Request Acceptor Bot. I Can Accept All Old Pending Join Request.\n\nFor All Pending Join Request Use - /accept</b>",
+        reply_markup=InlineKeyboardMarkup(
+            [[
+                InlineKeyboardButton('💝 sᴜʙsᴄʀɪʙᴇ ʏᴏᴜᴛᴜʙᴇ ᴄʜᴀɴɴᴇʟ', url='https://youtube.com/@Tech_VJ')
+            ], [
+                InlineKeyboardButton("❣️ ᴅᴇᴠᴇʟᴏᴘᴇʀ", url='https://t.me/Kingvj01'),
+                InlineKeyboardButton("🔙 Back", callback_data="back")
+            ]]
+        )
+    )
+    
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
     try:
@@ -73,7 +89,7 @@ async def help_callback(client: Client, callback_query):
             "Need more assistance? Feel free to ask!"
         )
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="back")]
+            [InlineKeyboardButton("🔙 Back", callback_data="back"), InlineKeyboardButton("Request ✨", callback_data="request")]
         ])
         await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
     except Exception as e:
