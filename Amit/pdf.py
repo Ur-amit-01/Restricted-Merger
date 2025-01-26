@@ -20,7 +20,7 @@ user_file_metadata = {}  # Store metadata for each user's files
 session_string = 'YOUR_SESSION_STRING'
 
 # Use your session string to create the bot client
-app = Client("my_bot", api_id="API_ID", api_hash="API_HASH", session_string=SESSION_STRING)
+app = Client("my_bot", api_id=API_ID, api_hash="API_HASH", session_string="SESSION_STRING")
 
 @app.on_message(filters.command(["merge"]))
 async def start_file_collection(client: Client, message: Message):
