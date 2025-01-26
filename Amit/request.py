@@ -7,8 +7,12 @@ from config import API_ID, API_HASH, BOT_TOKEN, NEW_REQ_MODE, SESSION_STRING
 
 @Client.on_message(filters.command('accept'))
 async def accept(client, message):
+    # Log the chat type for debugging
+    print(f"Received message from chat: {message.chat.type}")
+
     # Check if the command is issued in a private chat (DM)
     if message.chat.type == enums.ChatType.PRIVATE:
+        print("Command issued in DM, sending reply...")
         return await message.reply("🚫 **This command works only in channels.**")
     
     # Proceed if the command is issued in a channel
