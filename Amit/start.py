@@ -57,8 +57,17 @@ async def mergehelp_callback(client: Client, callback_query):
     try:
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Mergehelp callback triggered by {callback_query.from_user.id}")  # Log the callback query
-        mergehelp_text = """
-    > **⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
+        mergehelp_text = MERGE_TXT
+        reply_markup = InlineKeyboardMarkup([
+            [InlineKeyboardButton("🔙 Back", callback_data="help")]
+        ])
+        await callback_query.message.edit_text(mergehelp_text, reply_markup=reply_markup)
+    except Exception as e:
+        logger.error(f"Error in 'mergehelp_callback': {e}")
+        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+
+MERGE TXT = """> **⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
 **📄 /merge** - Start the merging process. 
 **⏳ Upload your files (PDFs or Images) in sequence.**
@@ -74,17 +83,7 @@ async def mergehelp_callback(client: Client, callback_query):
 
 **🔸 Customizations:**
 - **📝 Filename:** Simply type filename 
-- **📸 Thumbnail:** (Filename) -t (Thumbnail link)
-"""
-        reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="help")]
-        ])
-        await callback_query.message.edit_text(mergehelp_text, reply_markup=reply_markup)
-    except Exception as e:
-        logger.error(f"Error in 'mergehelp_callback': {e}")
-        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
-
-
+- **📸 Thumbnail:** (Filename) -t (Thumbnail link)"""
 
         
 
