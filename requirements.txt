@@ -15,4 +15,3 @@ gtts==2.2.3
 aiohttp==3.8.1
 pyrofork==2.3.48
 motor
-python-telegram-bot==13.5
