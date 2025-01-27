@@ -4,11 +4,7 @@ from pydub.effects import speedup, reverb
 from pyrogram import Client, filters
 import logging
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
-
-# Pyrogram Client Setup
-app = Client("my_bot")
 
 # Function to download and process the audio file
 async def download_audio(message):
@@ -59,7 +55,7 @@ async def send_processed_audio(chat_id, processed_file):
         logging.error(f"Error sending processed audio: {e}")
 
 # Function to handle the audio processing in the bot
-@app.on_message(filters.audio)
+@Client.on_message(filters.audio)
 async def handle_audio(client, message):
     # Download the audio
     file_path = await download_audio(message)
