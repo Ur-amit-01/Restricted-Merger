@@ -52,41 +52,6 @@ async def request_info_callback(client: Client, callback_query):
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
 
 
-@Client.on_callback_query(filters.regex("mergehelp"))
-async def mergehelp_callback(client: Client, callback_query):
-    try:
-        await callback_query.answer()  # Acknowledge the callback
-        logger.info(f"Mergehelp callback triggered by {callback_query.from_user.id}")  # Log the callback query
-        mergehelp_text = MERGE_TXT
-        reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="help")]
-        ])
-        await callback_query.message.edit_text(mergehelp_text, reply_markup=reply_markup)
-    except Exception as e:
-        logger.error(f"Error in 'mergehelp_callback': {e}")
-        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
-
-
-MERGE_TXT = """> **⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
-
-**📄 /merge** - Start the merging process. 
-**⏳ Upload your files (PDFs or Images) in sequence.**
-**✅ Type /done** to merge the uploaded files into a single PDF.
-
-**🔹 Supported Files:**
-- **📑 PDFs** - You can add multiple PDF files (up to 20 files).
-- **🖼️ Images** - Add images that will be converted to PDF pages.
-
-**⚠️ File Restrictions:**
-- **Max File Size:** 20MB
-- **Max Files per Merge:** 20 files
-
-**🔸 Customizations:**
-- **📝 Filename:** Simply type filename 
-- **📸 Thumbnail:** (Filename) -t (Thumbnail link)"""
-
-        
-
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
     try:
