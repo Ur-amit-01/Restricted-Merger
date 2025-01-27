@@ -1,7 +1,4 @@
 import os
-import shutil
-import subprocess
-from pyrogram import Client, filters
 from pydub import AudioSegment
 from pydub.effects import speedup
 import logging
@@ -18,26 +15,7 @@ async def download_audio(client, message):
         logger.error(f"Error downloading audio: {e}")
         return None
 
-# Function to apply reverb using ffmpeg
-def apply_reverb(input_path, output_path):
-    try:
-        if not shutil.which("ffmpeg"):
-            raise FileNotFoundError("ffmpeg is not installed or not found in PATH")
-        
-        command = [
-            "ffmpeg",
-            "-i", input_path,
-            "-af", "aecho=0.8:0.88:60:0.4",  # Reverb effect
-            output_path,
-            "-y"
-        ]
-        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return output_path
-    except Exception as e:
-        logger.error(f"Error applying reverb: {e}")
-        return None
-
-# Function to process audio
+# Function to process audio (slowing down the song)
 def process_audio(file_path):
     temp_path = "temp_slowed_audio.wav"
     try:
@@ -48,17 +26,10 @@ def process_audio(file_path):
         # Export slowed audio temporarily
         slowed.export(temp_path, format="wav")
 
-        # Apply reverb
-        output_path = f"processed_{os.path.basename(file_path)}"
-        processed_file = apply_reverb(temp_path, output_path)
-
-        return processed_file
+        return temp_path
     except Exception as e:
         logger.error(f"Error processing audio: {e}")
         return None
-    finally:
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
 
 # Function to send processed audio back to user
 async def send_processed_audio(client, chat_id, processed_file):
@@ -76,7 +47,7 @@ async def handle_audio(client, message):
     if not file_path:
         return
 
-    # Process audio
+    # Process audio (slow down)
     processed_file = process_audio(file_path)
     if not processed_file:
         return
