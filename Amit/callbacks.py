@@ -33,11 +33,7 @@ MERGE_TXT = """**⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
 @Client.on_callback_query(filters.regex("mergehelp"))
 async def mergehelp_callback(client: Client, callback_query):
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔙 Back", callback_data="help")]
-    ])
-    await callback_query.message.edit_text(MERGE_TXT, reply_markup=reply_markup)
-
+    await callback_query.answer("Merge Help Triggered!", show_alert=True)
 
 @Client.on_callback_query(filters.regex("request"))
 async def request_info_callback(client: Client, callback_query):
