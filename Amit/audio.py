@@ -2,6 +2,7 @@ import os
 from pydub import AudioSegment
 from pydub.effects import speedup
 import logging
+from pyrogram import Client, filters
 
 # Logger setup
 logger = logging.getLogger(__name__)
