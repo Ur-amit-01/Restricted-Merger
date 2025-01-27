@@ -9,7 +9,7 @@ import os
 # Get required environment variables
 PORT = int(os.environ.get('PORT', '8080'))
 TOKEN = os.environ.get('BOT_TOKEN', None)
-owner = os.environ.get('OWNER', None)
+owner = os.environ.get('OWNER', '7728066109')
 
 # Ensure chats.json exists
 if not os.path.exists("chats.json"):
