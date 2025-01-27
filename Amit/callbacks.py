@@ -23,13 +23,11 @@ RESTRICTED_TXT = """> **💡 Restricted content saver**
 
 **3. 📂 Batch Mode**
 ➥ Download multiple posts using this format:  
-> https://t.me/xxxx/1001-1010
-
-> **👨‍💻 Dᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)**"""
+> https://t.me/xxxx/1001-1010"""
 
 #------------------- MERGE -------------------#
 
-MERGE_TXT = """**⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
+MERGE_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
 📄 **/merge** - Start the merging process.  
 ⏳ **Upload your files (PDFs or Images) in sequence.**  
@@ -51,13 +49,23 @@ MERGE_TXT = """**⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 async def restricted_callback(client: Client, callback_query):
     await callback_query.answer()  # Acknowledge the callback
     reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔙 Back", callback_data="back")]
+        [InlineKeyboardButton("🔙 Back", callback_data="help")]
     ])
     await callback_query.message.edit_text(
         RESTRICTED_TXT,
         reply_markup=reply_markup
     )
 
+@Client.on_callback_query(filters.regex("mergehelp"))
+async def mergehelp_callback(client: Client, callback_query):
+    await callback_query.answer()  # Acknowledge the callback
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔙 Back", callback_data="help")]
+    ])
+    await callback_query.message.edit_text(
+        MERGE_TXT,
+        reply_markup=reply_markup
+    )
 
 @Client.on_callback_query(filters.regex("request"))
 async def request_info_callback(client: Client, callback_query):
@@ -125,7 +133,7 @@ async def help_callback(client: Client, callback_query):
         await callback_query.answer()  # Acknowledge the callback
         logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
         help_text = (
-            "**📖 Help section**\n\n"
+            "> **📖 My Modules**\n\n"
             "**Choose from the options below.**\n"
         )
         reply_markup = InlineKeyboardMarkup([
