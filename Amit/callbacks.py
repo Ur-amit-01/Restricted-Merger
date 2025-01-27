@@ -1,5 +1,5 @@
-import time  # For uptime calculations
-import logging  # For logging events and errors
+import time
+import logging
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -27,7 +27,7 @@ RESTRICTED_TXT = """> **💡 Restricted content saver**
 
 #------------------- MERGE -------------------#
 
-MERGE_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
+MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
 📄 **/merge** - Start the merging process.  
 ⏳ **Upload your files (PDFs or Images) in sequence.**  
@@ -56,14 +56,14 @@ async def restricted_callback(client: Client, callback_query):
         reply_markup=reply_markup
     )
 
-@Client.on_callback_query(filters.regex("merge"))
-async def merge_callback(client: Client, callback_query):
+@Client.on_callback_query(filters.regex("merger"))
+async def merger_callback(client: Client, callback_query):
     await callback_query.answer()  # Acknowledge the callback
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="help")]
     ])
     await callback_query.message.edit_text(
-        MERGE_TXT,
+        MERGER_TXT,
         reply_markup=reply_markup
     )
 
