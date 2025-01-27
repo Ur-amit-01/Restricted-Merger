@@ -14,7 +14,7 @@ async def download_audio(message):
     try:
         # Get the audio file from the message
         file_id = message.audio.file_id
-        file_info = await app.get_file(file_id)
+        file_info = await client.get_file(file_id)
         file_path = file_info.file_path
 
         # Download the file to a local folder
@@ -75,7 +75,7 @@ def process_audio(file_path):
 async def send_processed_audio(chat_id, processed_file):
     try:
         # Send the processed file to the user
-        await app.send_audio(chat_id=chat_id, audio=processed_file)
+        await client.send_audio(chat_id=chat_id, audio=processed_file)
         logging.info(f"Processed file sent to user: {processed_file}")
     except Exception as e:
         logging.error(f"Error sending processed audio: {e}")
