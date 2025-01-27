@@ -33,17 +33,17 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 ⏳ **Upload your files (PDFs or Images) in sequence.**  
 ✅ **Type /done** to merge the uploaded files into a single PDF.
 
-🔹 **Supported Files:**  
-- 📑 PDFs: Add up to 20 PDF files.  
-- 🖼️ Images: Convert images to PDF pages.
+> 🌺 **Supported Files:**  
+**• 📑 PDFs: Add up to 20 PDF files.**
+**• 🖼️ Images: Convert images to PDF pages.**
 
-⚠️ **Restrictions:**  
-- Max File Size: 20MB  
-- Max Files per Merge: 20.
+> ⚠️ **Restrictions:**  
+**• Max File Size: 20MB**
+**• Max Files per Merge: 20**
 
-🔸 **Customizations:**  
-- 📝 Filename: Provide a custom name for your PDF.  
-- 📸 Thumbnail: Use (Filename) -t (Thumbnail link)."""
+> ✨ **Customizations:**  
+**• 📝 Filename: Provide a custom name for your PDF.**
+**• 📸 Thumbnail: Use (Filename) -t (Thumbnail link).**"""
 
 @Client.on_callback_query(filters.regex("restricted"))
 async def restricted_callback(client: Client, callback_query):
@@ -56,8 +56,8 @@ async def restricted_callback(client: Client, callback_query):
         reply_markup=reply_markup
     )
 
-@Client.on_callback_query(filters.regex("combine"))
-async def combine_callback(client: Client, callback_query):
+@Client.on_callback_query(filters.regex("combiner"))
+async def combiner_callback(client: Client, callback_query):
     await callback_query.answer()  # Acknowledge the callback
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="help")]
@@ -134,11 +134,11 @@ async def help_callback(client: Client, callback_query):
         logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
         help_text = (
             "> **📖 My Modules**\n\n"
-            "👇🏻👇🏻"
+            "**• Choose from the options below.**"
         )
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("• Join Request acceptor •", callback_data="request")],
-            [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="combine")],
+            [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="combiner")],
             [InlineKeyboardButton("🪄 Restricted content saver 🪄", callback_data="restricted")],
             [InlineKeyboardButton("🔙 Back 🔙", callback_data="back")]
         ])
@@ -165,4 +165,6 @@ async def back_callback(client: Client, callback_query):
     except Exception as e:
         logger.error(f"Error in 'back_callback': {e}")
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
+
+
 
