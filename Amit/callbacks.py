@@ -31,10 +31,6 @@ MERGE_TXT = """**⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 - 📝 Filename: Provide a custom name for your PDF.  
 - 📸 Thumbnail: Use (Filename) -t (Thumbnail link)."""
 
-@Client.on_callback_query(filters.regex("mergehelp"))
-async def mergehelp_callback(client: Client, callback_query):
-    await callback_query.answer("Merge Help Triggered!", show_alert=True)
-
 @Client.on_callback_query(filters.regex("request"))
 async def request_info_callback(client: Client, callback_query):
     try:
