@@ -12,7 +12,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-HELP_TXT = """**💡 Help Section**
+RESTRICTED_TXT = """> **💡 Restricted content saver**
 
 **1. 🔒 Private Chats**
 ➥ Send the invite link (if not already a member).  
@@ -46,6 +46,18 @@ MERGE_TXT = """**⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 🔸 **Customizations:**  
 - 📝 Filename: Provide a custom name for your PDF.  
 - 📸 Thumbnail: Use (Filename) -t (Thumbnail link)."""
+
+@Client.on_callback_query(filters.regex("restricted"))
+async def restricted_callback(client: Client, callback_query):
+    await callback_query.answer()  # Acknowledge the callback
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("🔙 Back", callback_data="back")]
+    ])
+    await callback_query.message.edit_text(
+        RESTRICTED_TXT,
+        reply_markup=reply_markup
+    )
+
 
 @Client.on_callback_query(filters.regex("request"))
 async def request_info_callback(client: Client, callback_query):
@@ -119,6 +131,7 @@ async def help_callback(client: Client, callback_query):
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("• Join Request acceptor •", callback_data="request")],
             [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="mergehelp")],
+            [InlineKeyboardButton("🪄 Restricted content saver 🪄", callback_data="restricted")],
             [InlineKeyboardButton("🔙 Back 🔙", callback_data="back")]
         ])
         await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
