@@ -67,7 +67,7 @@ async def mergehelp_callback(client: Client, callback_query):
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
 
 
-MERGE TXT = """> **⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
+MERGE_TXT = """> **⚙️ Hᴇʟᴘ ᴅᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
 **📄 /merge** - Start the merging process. 
 **⏳ Upload your files (PDFs or Images) in sequence.**
