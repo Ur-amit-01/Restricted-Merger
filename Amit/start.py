@@ -7,7 +7,7 @@ from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from config import API_ID, API_HASH, BOT_TOKEN, ERROR_MESSAGE, SESSION_STRING
-from callbacks import mergehelp_callback, request_info_callback, about_callback, help_callback, back_callback
+from callbacks import about_callback, help_callback
 
 start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
