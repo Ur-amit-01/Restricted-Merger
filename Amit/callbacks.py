@@ -1,5 +1,17 @@
+import time  # For uptime calculations
+import logging  # For logging events and errors
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+# Define the bot's start time
+start_time = time.time()
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
+logger = logging.getLogger(__name__)
+
 
 MERGE_TXT = """**⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
