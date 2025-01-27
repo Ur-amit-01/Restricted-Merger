@@ -1,9 +1,12 @@
 import os
+import shutil
+import subprocess
 from pydub import AudioSegment
-from pydub.effects import speedup, reverb
+from pydub.effects import speedup
 from pyrogram import Client, filters
 import logging
 
+# Setup logging
 logging.basicConfig(level=logging.INFO)
 
 # Function to download and process the audio file
@@ -22,6 +25,27 @@ async def download_audio(message):
         logging.error(f"Error downloading audio: {e}")
         return None
 
+# Function to apply reverb using ffmpeg
+def apply_reverb(input_path, output_path):
+    try:
+        # Check if ffmpeg is installed
+        if not shutil.which("ffmpeg"):
+            raise FileNotFoundError("ffmpeg is not installed or not found in PATH")
+        
+        # ffmpeg command to apply reverb
+        command = [
+            "ffmpeg",
+            "-i", input_path,
+            "-af", "aecho=0.8:0.88:60:0.4",  # Reverb effect
+            output_path,
+            "-y"
+        ]
+        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return output_path
+    except Exception as e:
+        logging.error(f"Error applying reverb: {e}")
+        return None
+
 # Function to process the audio (slow down and add reverb)
 def process_audio(file_path):
     try:
@@ -31,16 +55,18 @@ def process_audio(file_path):
         # Slow down the audio by 20%
         slowed = speedup(sound, 0.8)
 
+        # Save the slowed file temporarily
+        temp_path = "temp_slowed_audio.wav"
+        slowed.export(temp_path, format="wav")
+
         # Apply reverb to the slowed audio
-        audio_with_reverb = reverb(slowed)
-
-        # Define the output path for the processed file
         output_path = f"processed_{os.path.basename(file_path)}"
+        processed_file = apply_reverb(temp_path, output_path)
 
-        # Export the processed audio
-        audio_with_reverb.export(output_path, format="mp3")
+        # Clean up the temporary file
+        os.remove(temp_path)
 
-        return output_path
+        return processed_file
     except Exception as e:
         logging.error(f"Error processing audio: {e}")
         return None
@@ -55,7 +81,7 @@ async def send_processed_audio(chat_id, processed_file):
         logging.error(f"Error sending processed audio: {e}")
 
 # Function to handle the audio processing in the bot
-@Client.on_message(filters.audio)
+@app.on_message(filters.audio)
 async def handle_audio(client, message):
     # Download the audio
     file_path = await download_audio(message)
@@ -69,3 +95,5 @@ async def handle_audio(client, message):
 
     # Send the processed audio back to the user
     await send_processed_audio(message.chat.id, processed_file)
+
+
