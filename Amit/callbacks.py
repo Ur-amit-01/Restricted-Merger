@@ -56,8 +56,8 @@ async def restricted_callback(client: Client, callback_query):
         reply_markup=reply_markup
     )
 
-@Client.on_callback_query(filters.regex("merger"))
-async def merger_callback(client: Client, callback_query):
+@Client.on_callback_query(filters.regex("combine"))
+async def combine_callback(client: Client, callback_query):
     await callback_query.answer()  # Acknowledge the callback
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="help")]
@@ -134,11 +134,11 @@ async def help_callback(client: Client, callback_query):
         logger.info(f"Help callback triggered by {callback_query.from_user.id}")  # Log the callback query
         help_text = (
             "> **📖 My Modules**\n\n"
-            "**Choose from the options below.**\n"
+            "👇🏻👇🏻"
         )
         reply_markup = InlineKeyboardMarkup([
             [InlineKeyboardButton("• Join Request acceptor •", callback_data="request")],
-            [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="merge")],
+            [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="combine")],
             [InlineKeyboardButton("🪄 Restricted content saver 🪄", callback_data="restricted")],
             [InlineKeyboardButton("🔙 Back 🔙", callback_data="back")]
         ])
