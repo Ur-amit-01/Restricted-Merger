@@ -12,14 +12,16 @@ from Amit.callbacks import about_callback, help_callback
 start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-    
-@Client.on_message(filters.command("start"))
+   
+
+@Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
-    logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
+    batch_temp.IS_BATCH[message.from_user.id] = True  # Ensure batch is not locked
+    logger.info(f"/start command triggered by {message.from_user.id}") 
     start_text = (
         f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+        "**🔋 I am a powerful bot designed to assist you effortlessly.**\n\n"
+        "**🔘 Use the buttons below to learn more about my functions!**"
     )
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
@@ -113,7 +115,7 @@ async def progress(current, total, message, type):
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
-    batch_temp.IS_BATCH[message.from_user.id] = True
+    batch_temp.IS_BATCH[message.from_user.id] = True  # Reset batch process
     await client.send_message(
         chat_id=message.chat.id,
         text="**Batch Successfully Cancelled.**"
