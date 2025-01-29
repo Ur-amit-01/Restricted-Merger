@@ -13,7 +13,6 @@ start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.command(["start"]))
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
