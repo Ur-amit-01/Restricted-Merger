@@ -13,15 +13,6 @@ start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-@Client.on_message(filters.command(["cancel"]))
-async def send_cancel(client: Client, message: Message):
-    logger.info(f"/cancel command triggered by user {message.from_user.id}")
-    batch_temp.IS_BATCH[message.from_user.id] = True  # Reset batch process
-    await client.send_message(
-        chat_id=message.chat.id,
-        text="**Batch Successfully Cancelled. 🚫**"
-    )
-
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     batch_temp.IS_BATCH[message.from_user.id] = True  # Ensure batch is not locked
@@ -36,7 +27,14 @@ async def send_start(client: Client, message: Message):
     ])
     await message.reply_text(start_text, reply_markup=reply_markup)
 
-
+@Client.on_message(filters.command(["cancel"]))
+async def send_cancel(client: Client, message: Message):
+    logger.info(f"/cancel command triggered by user {message.from_user.id}")
+    batch_temp.IS_BATCH[message.from_user.id] = True  # Reset batch process
+    await client.send_message(
+        chat_id=message.chat.id,
+        text="**Batch Successfully Cancelled. 🚫**"
+    )
 #————————————————————————————————————————————Progress————————————————————————————————————————————————
 
 class batch_temp(object):
