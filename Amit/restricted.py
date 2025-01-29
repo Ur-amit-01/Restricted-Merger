@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
-    batch_temp.IS_BATCH[message.from_user.id] = True  # Ensure batch is not locked
     logger.info(f"/start command triggered by {message.from_user.id}") 
     start_text = (
         f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
