@@ -14,28 +14,30 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 @Client.on_message(filters.command(["start"]))
-async def send_start(client: Client, message: Message):
-    batch_temp.IS_BATCH[message.from_user.id] = True  # Ensure batch is not locked
-    logger.info(f"/start command triggered by {message.from_user.id}") 
-    start_text = (
-        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
-        "**🔋 I ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-    )
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
-    ])
-    await message.reply_text(start_text, reply_markup=reply_markup)
-
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
     batch_temp.IS_BATCH[message.from_user.id] = True  # Reset batch process
     await client.send_message(
         chat_id=message.chat.id,
-        text="**Batch Successfully Cancelled.**"
+        text="**Batch Successfully Cancelled. 🚫**"
     )
-   
+
+@Client.on_message(filters.command(["start"]))
+async def send_start(client: Client, message: Message):
+    batch_temp.IS_BATCH[message.from_user.id] = True  # Ensure batch is not locked
+    logger.info(f"/start command triggered by {message.from_user.id}") 
+    start_text = (
+        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "**🔋 I am a powerful bot designed to assist you effortlessly.**\n\n"
+        "**🔘 Use the buttons below to learn more about my functions!**"
+    )
+    reply_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
+    ])
+    await message.reply_text(start_text, reply_markup=reply_markup)
+
+
 #————————————————————————————————————————————Progress————————————————————————————————————————————————
 
 class batch_temp(object):
