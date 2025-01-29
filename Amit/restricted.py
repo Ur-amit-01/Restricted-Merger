@@ -172,8 +172,7 @@ async def save(client: Client, message: Message):
             await asyncio.sleep(1)
         batch_temp.IS_BATCH[message.from_user.id] = True
         await acc.disconnect()
-        STICKER_ID = "CAACAgIAAxkBAAEWFCFnmnr0Tt8-3ImOZIg9T-5TntRQpAAC4gUAAj-VzApzZV-v3phk4DYE"  # Change this to any sticker ID
-        await client.send_sticker(message.chat.id, STICKER_ID)
+        
 
 
 # handle private
