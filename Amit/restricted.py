@@ -12,6 +12,7 @@ from Amit.callbacks import about_callback, help_callback
 start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+   
 
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
@@ -27,7 +28,8 @@ async def send_start(client: Client, message: Message):
     ])
     await message.reply_text(start_text, reply_markup=reply_markup)
 
-#————————————————————————————————————————————Progress————————————————————————————————————————————————
+
+#————————————————————————————————————————————————————————————————————————————————————————————
 
 class batch_temp(object):
     IS_BATCH = {}
@@ -108,16 +110,16 @@ async def progress(current, total, message, type):
     except Exception as e:
         logger.error(f"Error in progress function: {e}")
 
-#—————————————————————————• Restricted content saving logic •———————————————————————————————————————
+#————————————————————————————————————————————————————————————————————————————————————————————
+
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
     batch_temp.IS_BATCH[message.from_user.id] = True  # Reset batch process
     await client.send_message(
         chat_id=message.chat.id,
-        text="**Batch Successfully Cancelled. 🚫**"
+        text="**Batch Successfully Cancelled.**"
     )
-
 
 @Client.on_message(filters.text & filters.private & filters.regex("https://t.me/"))
 async def save(client: Client, message: Message):
@@ -333,4 +335,4 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
     except:
         pass
 
-
+                                   
