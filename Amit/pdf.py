@@ -171,7 +171,12 @@ async def handle_filename(client: Client, message: Message):
                 )
 
             await progress_message.delete()
-            await message.reply_text("🔥 Your PDF is ready! Enjoy! 🎉")
+
+            # Send a sticker after sending the merged PDF
+            await client.send_sticker(
+                chat_id=message.chat.id,
+                sticker="AAMCAgADGQEAARYUIWeaevRO3z7ciY5kiD1P7lOe1FCkAALiBQACP5XMCnNlX6_emGTgAQAHbQADNgQ"  # Replace with your preferred sticker ID
+            )
 
     except Exception as e:
         await progress_message.edit_text(f"❌ Failed to merge files: {e}")
