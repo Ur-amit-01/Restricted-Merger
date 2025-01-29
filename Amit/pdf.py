@@ -175,7 +175,7 @@ async def handle_filename(client: Client, message: Message):
             # Send a sticker after sending the merged PDF
             await client.send_sticker(
                 chat_id=message.chat.id,
-                sticker="AAMCAgADGQEAARYUIWeaevRO3z7ciY5kiD1P7lOe1FCkAALiBQACP5XMCnNlX6_emGTgAQAHbQADNgQ"  # Replace with your preferred sticker ID
+                sticker="CAACAgIAAxkBAAEWFCFnmnr0Tt8-3ImOZIg9T-5TntRQpAAC4gUAAj-VzApzZV-v3phk4DYE"  # Replace with your preferred sticker ID
             )
 
     except Exception as e:
