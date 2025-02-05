@@ -27,39 +27,19 @@ def upload_image_requests(image_path):
 
 @Client.on_message(filters.command("telegraph") & filters.private)
 async def telegraph_upload(bot, update):
-    # Check if the message is a reply to an image
-    if update.reply_to_message and update.reply_to_message.photo:
-        t_msg = update.reply_to_message
-        uploading_message = await update.reply_text("<b>⏳ ᴜᴘʟᴏᴀᴅɪɴɢ...</b>")
-        try:
-            image_url = upload_image_requests(t_msg.photo.file_id)
-            if not image_url:
-                return await uploading_message.edit_text("❌ **Failed to upload file.**")
-        except Exception as error:
-            await uploading_message.edit_text(f"❌ **Upload failed: {error}**")
-            return
-        await uploading_message.edit_text(
-            text=f"<b>🔗 **Link** :-</b>\n\n<code>{image_url}</code>",
-            disable_web_page_preview=True
-        )
-        await t_msg.reply_photo(photo=t_msg.photo.file_id, caption=f"**Here is your media link:**\n\n{image_url}")
-    else:
-        # If the message is not a reply to an image, ask for an image
-        t_msg = await bot.ask(chat_id = update.from_user.id, text="📸 **Now Send Me Your Photo Or Video Under 5MB To Get Media Link** 🎥")
-        if not t_msg.media:
-            return await update.reply_text("❌ **Only Media Supported.** 📲")
-        path = await t_msg.download()
-        uploading_message = await update.reply_text("<b>⏳ ᴜᴘʟᴏᴀᴅɪɴɢ...</b>")
-        try:
-            image_url = upload_image_requests(path)
-            if not image_url:
-                return await uploading_message.edit_text("❌ **Failed to upload file.**")
-        except Exception as error:
-            await uploading_message.edit_text(f"❌ **Upload failed: {error}**")
-            return
-        await uploading_message.edit_text(
-            text=f"<b>🔗 **Link** :-</b>\n\n<code>{image_url}</code>",
-            disable_web_page_preview=True
-        )
-        await t_msg.reply_photo(photo=t_msg.photo.file_id, caption=f"**Here is your media link:**\n\n{image_url}")
-
+    t_msg = await bot.ask(chat_id = update.from_user.id, text="📸 **Now Send Me Your Photo Or Video Under 5MB To Get Media Link** 🎥")
+    if not t_msg.media:
+        return await update.reply_text("❌ **Only Media Supported.** 📲")
+    path = await t_msg.download()
+    uploading_message = await update.reply_text("<b>⏳ ᴜᴘʟᴏᴀᴅɪɴɢ...</b>")
+    try:
+        image_url = upload_image_requests(path)
+        if not image_url:
+            return await uploading_message.edit_text("❌ **Failed to upload file.**")
+    except Exception as error:
+        await uploading_message.edit_text(f"❌ **Upload failed: {error}**")
+        return
+    await uploading_message.edit_text(
+        text=f"<b>🔗 **Link** :-</b>\n\n<code>{image_url}</code>",
+        disable_web_page_preview=True
+    )
