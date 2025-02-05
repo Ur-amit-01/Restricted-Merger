@@ -48,13 +48,10 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 
 
 @Client.on_message(filters.command("start"))
+@Client.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
     """
     Handle the /start command. Sends a welcoming message to the user with buttons for navigation.
-   
-    Args:
-        bot (Client): The bot client instance.
-        m (Message): Incoming message object.
     """
     photo = "https://envs.sh/ypf.jpg"  # Replace with a valid image URL
     btn = InlineKeyboardMarkup(
@@ -69,10 +66,10 @@ async def start(bot: Client, m: Message):
         ]
     )
     start_text = (
-            f"> **✨👋🏻 Hey {callback_query.from_user.mention} !!**\n\n"
-            "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-            "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-        )
+        f"> **✨👋🏻 Hey {m.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+    )
     await m.reply_photo(photo=photo, caption=start_text, reply_markup=btn)
 
 
