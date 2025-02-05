@@ -41,12 +41,11 @@ async def start(bot: Client, m: Message):
     btn = InlineKeyboardMarkup(
         [
             [
-                InlineKeyboardButton("🌟 Updates Channel 🌟", url="https://t.me/StarkBots"),
-                InlineKeyboardButton("🍀 Support Chat 🍀", url="https://t.me/StarkBotsChat")
+                InlineKeyboardButton("💡 About", callback_data="about"),
+                InlineKeyboardButton("📖 Help", callback_data="help")
             ],
             [
-                InlineKeyboardButton("🧑‍💻 Developer 🧑‍💻", url="https://t.me/Axa_bachha"),
-                InlineKeyboardButton("📜 ToS 📜", callback_data="tos")
+                InlineKeyboardButton("🧑‍💻 Developer 🧑‍💻", url="https://t.me/Ur_amit_01")
             ]
         ]
     )
