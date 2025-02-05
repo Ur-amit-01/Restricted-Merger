@@ -49,26 +49,10 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 @Client.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
     """
-    Handle the /start command. Sends a welcoming message to the user with buttons for navigation.
+    Handle the /start command. Sends a simple start message to the user.
     """
-    photo = "https://envs.sh/ypf.jpg"  # Replace with a valid image URL
-    btn = InlineKeyboardMarkup(
-        [
-            [
-                InlineKeyboardButton("💡 About", callback_data="about"),
-                InlineKeyboardButton("📖 Help", callback_data="help")
-            ],
-            [
-                InlineKeyboardButton("🧑‍💻 Developer 🧑‍💻", url="https://t.me/Ur_amit_01")
-            ]
-        ]
-    )
-    start_text = (
-        f"> **✨👋🏻 Hey {m.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-    )
-    await m.reply_text(caption=start_text, reply_markup=btn)
+    start_text = "Welcome! I'm your bot. How can I assist you today?"
+    await m.reply_text(start_text)
 
 
 @Client.on_callback_query(filters.regex("restricted"))
