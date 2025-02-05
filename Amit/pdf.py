@@ -58,10 +58,13 @@ async def handle_pdf_metadata(client: Client, message: Message):
         "**Sᴇɴᴅ ᴍᴏʀᴇ ғɪʟᴇs ᴏʀ ᴜsᴇ /done ✅ ᴛᴏ ᴍᴇʀɢᴇ ᴛʜᴇᴍ.**"
     )
 
-
 @Client.on_message(filters.photo & filters.private)
 async def handle_image_metadata(client: Client, message: Message):
     user_id = message.from_user.id
+
+    # Ignore images sent by the bot itself
+    if message.from_user.is_bot:
+        return
 
     if user_id not in user_file_metadata:
         await message.reply_text("**⏳ Sᴛᴀʀᴛ ᴛʜᴇ ᴍᴇʀɢɪɴɢ ᴘʀᴏᴄᴇss ғɪʀsᴛ ᴡɪᴛʜ /merge 🔄.**")
