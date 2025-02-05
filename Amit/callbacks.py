@@ -48,11 +48,21 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 @Client.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
     """
-    Handle the /start command. Sends a welcoming photo only.
+    Handle the /start command. Sends a welcoming message with a photo and then text.
     """
     photo = "https://envs.sh/ypf.jpg"  # Replace with a valid image URL
-    await m.reply_text("Welcome!")  # First, ensure this works
-    await m.reply_photo(photo=photo)  # Then, send the photo separately
+    
+    # Send photo first
+    await m.reply_photo(photo=photo)
+    
+    # Now send the start message
+    start_text = (
+        f"> **✨👋🏻 Hey {m.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+    )
+    await m.reply_text(start_text)
+
 
 @Client.on_callback_query(filters.regex("restricted"))
 async def restricted_callback(client: Client, callback_query):
