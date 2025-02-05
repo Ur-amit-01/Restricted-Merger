@@ -51,7 +51,8 @@ async def start(bot: Client, m: Message):
     Handle the /start command. Sends a welcoming photo only.
     """
     photo = "https://envs.sh/ypf.jpg"  # Replace with a valid image URL
-    await m.reply_photo(photo=photo)
+    await m.reply_text("Welcome!")  # First, ensure this works
+    await m.reply_photo(photo=photo)  # Then, send the photo separately
 
 @Client.on_callback_query(filters.regex("restricted"))
 async def restricted_callback(client: Client, callback_query):
