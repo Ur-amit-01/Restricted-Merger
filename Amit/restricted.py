@@ -13,18 +13,18 @@ start_time = time.time()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
     
-@Client.on_message(filters.command("start"))
-async def send_start(client: Client, message: Message):
-    logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
-    start_text = (
-        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
-        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-    )
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
-    ])
-    await message.reply_text(start_text, reply_markup=reply_markup)
+#@Client.on_message(filters.command("start"))
+#async def send_start(client: Client, message: Message):
+ #   logger.info(f"/start command triggered by {message.from_user.id}")  # Log the start command
+  #  start_text = (
+   #     f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+    #    "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+  #      "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+ #   )
+  #  reply_markup = InlineKeyboardMarkup([
+  #      [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
+  #  ])
+#    await message.reply_text(start_text, reply_markup=reply_markup)
 
 
 #————————————————————————————————————————————————————————————————————————————————————————————
