@@ -1,28 +1,3 @@
-"""
-This bot saves restricted content and makes it accessible to users via commands. 
-Includes commands for start, help, and ToS.
-
-Author:
-    - @CoderX on Telegram
-    - @Snehashish06 on GitHub
-
-Project:
-    - Developed for the @StarkBots channel on Telegram.
-
-License:
-    This code is open-source and can be reused or modified under the following conditions:
-    1. Proper credits must be given to the original authors.
-    2. A link to the original source must be included in derivative works.
-
-Disclaimer:
-    This project was coded solely for learning purposes. The owner will not be held responsible
-    for any misuse, illegal activities, or violations of Terms of Service (ToS) of any platform 
-    arising from the use or modification of this code. Users are strongly advised to comply with 
-    the applicable rules and regulations of the services they interact with.
-
-Dependencies:
-    - Pyrogram
-"""
 
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
