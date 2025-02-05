@@ -46,8 +46,6 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 **• 📸 Thumbnail: Use (Filename) -t (Thumbnail link).**"""
 
 
-
-@Client.on_message(filters.command("start"))
 @Client.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
     """
