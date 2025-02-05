@@ -40,6 +40,6 @@ async def telegraph_upload(bot, update):
         await uploading_message.edit_text(f"❌ **Upload failed: {error}**")
         return
     await uploading_message.edit_text(
-        text=f"<b>🔗 **Link** :-</b>\n\n<code>{image_url}</code>",
+        text=f"<b>🔗 **Link** :-\n{image_url}</b>",
         disable_web_page_preview=True
     )
