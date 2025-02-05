@@ -1,7 +1,7 @@
 import time
 import logging
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 # Define the bot's start time
 start_time = time.time()
