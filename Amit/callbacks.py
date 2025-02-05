@@ -49,10 +49,15 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 @Client.on_message(filters.command("start"))
 async def start(bot: Client, m: Message):
     """
-    Handle the /start command. Sends a simple start message to the user.
+    Handle the /start command. Sends a welcoming message with a photo and buttons.
     """
-    start_text = "Welcome! I'm your bot. How can I assist you today?"
-    await m.reply_text(start_text)
+    photo = "https://envs.sh/ypf.jpg"  # Replace with a valid image URL
+    start_text = (
+        f"> **✨👋🏻 Hey {m.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+    )
+    await m.reply_photo(photo=photo, caption=start_text)
 
 
 @Client.on_callback_query(filters.regex("restricted"))
