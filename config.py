@@ -1,4 +1,4 @@
- import os
+import os
 from os import environ
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
