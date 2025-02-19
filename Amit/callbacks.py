@@ -45,7 +45,8 @@ async def set(client, message):
 
 # ------------------- Start ------------------- #
 
-@Client.on_message(filters.command(["start"]))
+@Client.on_message(filters.command("start"))
+@Client.on_callback_query(filters.regex("start"))
 async def account_login(client: Client, m: Message):
     random_image = random.choice(random_images)
 
@@ -165,7 +166,7 @@ async def about_callback(client: Client, callback_query):
         await callback_query.answer()
         ABOUT_TXT_MSG = ABOUT_TXT
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="back"), InlineKeyboardButton("🕒 ᴜᴘᴛɪᴍᴇ", callback_data="uptime")]
+            [InlineKeyboardButton("🔙 Back", callback_data="start"), InlineKeyboardButton("🕒 ᴜᴘᴛɪᴍᴇ", callback_data="uptime")]
         ])
         await callback_query.message.edit_text(
             ABOUT_TXT_MSG,
@@ -197,31 +198,11 @@ async def help_callback(client: Client, callback_query):
             [InlineKeyboardButton("• Join Request acceptor •", callback_data="request")],
             [InlineKeyboardButton("📃 PDF Merging 📃", callback_data="combiner")],
             [InlineKeyboardButton("🪄 Restricted content saver 🪄", callback_data="restricted")],
-            [InlineKeyboardButton("🔙 Back 🔙", callback_data="back")]
+            [InlineKeyboardButton("🔙 Back 🔙", callback_data="start")]
         ])
         await callback_query.message.edit_text(help_text, reply_markup=reply_markup)
     except Exception as e:
         logger.error(f"Error in 'help_callback': {e}")
         await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
-
-
-@Client.on_callback_query(filters.regex("back"))
-async def back_callback(client: Client, callback_query):
-    try:
-        await callback_query.answer()  # Acknowledge the callback
-        logger.info(f"Back callback triggered by {callback_query.from_user.id}")  # Log the callback query
-        start_text = (
-            f"> **✨👋🏻 Hey {callback_query.from_user.mention} !!**\n\n"
-            "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
-            "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
-        )
-        reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("💡 About", callback_data="about"), InlineKeyboardButton("📖 Help", callback_data="help")]
-        ])
-        await callback_query.message.edit_text(start_text, reply_markup=reply_markup)
-    except Exception as e:
-        logger.error(f"Error in 'back_callback': {e}")
-        await callback_query.answer("An error occurred. Please try again later.", show_alert=True)
-
 
 
