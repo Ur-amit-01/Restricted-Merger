@@ -2,7 +2,10 @@ import time
 import logging
 import random
 from pyrogram import Client, filters
-from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, BotCommand
+from config import BOT_TOKEN
+import requests
+from pyrogram.enums import BotCommandScopeDefault
 
 # Define the bot's start time
 START_TIME = time.time()
@@ -17,6 +20,28 @@ random_images = [
     "https://envs.sh/Q_x.jpg",
     "https://envs.sh/Q_x.jpg"
 ]
+
+
+@Client.on_message(filters.command("set") & filters.user("6803505727"))
+async def set_commands(client, message):
+    commands = [
+        {"command": "start", "description": "Start the bot and view the welcome message"},
+        {"command": "merge", "description": "Merge multiple PDFs or images into a single PDF"},
+        {"command": "done", "description": "Merge PDFs"},
+        {"command": "stickerid", "description": "Get sticker id (For Developers)"},
+        {"command": "telegraph", "description": "Telegraph link for media"},
+        {"command": "tts", "description": "Text to speech"},
+        {"command": "accept", "description": "Accept all pending join requests in your channel"},
+    ]
+
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/setMyCommands"
+    response = requests.post(url, json={"commands": commands})
+
+    if response.status_code == 200:
+        await message.reply_text("✅ Successfully set commands in BotFather!")
+    else:
+        await message.reply_text(f"❌ Failed to set commands! Error: {response.text}")
+
 
 @Client.on_message(filters.command(["start"]))
 async def account_login(client: Client, m: Message):
