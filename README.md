@@ -13,9 +13,11 @@
 
 ## Commands
 
-- ```start - Check Bot Is Working Or Not```
-- help - Check How To Use Bot
-- cancel - Cancel Your Any Ongoing Task```
+```
+start - Check Bot Is Working Or Not
+help - Check How To Use Bot
+cancel - Cancel Your Any Ongoing Task
+```
 
 ---
 
