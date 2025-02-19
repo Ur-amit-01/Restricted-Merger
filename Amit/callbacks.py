@@ -21,30 +21,7 @@ random_images = [
     "https://envs.sh/Q_y.jpg"
 ]
 
-# Bot Owner ID (list for proper checking)
-OWNER_ID = [6803505727]
-
-# ------------------- Set Commands ------------------- #
-@Client.on_message(filters.command("set") & filters.private)
-async def set_commands(client: Client, message: Message):
-    if message.from_user.id not in OWNER_ID:
-        await message.reply("**🚫 You are not authorized to use this command.**")
-        return
-
-    await client.set_bot_commands([
-        BotCommand("start", "🚀 Start the bot and view the welcome message"),
-        BotCommand("merge", "📎 Merge multiple PDFs or images into a single PDF"),
-        BotCommand("done", "✅ Complete the merging process"),
-        BotCommand("stickerid", "🆔 Get sticker ID (For Developers)"),
-        BotCommand("tts", "🗣️ Convert text to speech"),
-        BotCommand("accept", "✔️ Accept all pending join requests in your channel"),
-    ])
-    
-    await message.reply("**✅ Commands configured successfully!**")
-
-# ------------------- Start Command ------------------- #
 @Client.on_message(filters.command("start") & filters.private)
-@Client.on_callback_query(filters.regex("start"))
 async def account_login(client: Client, message: Message):
     random_image = random.choice(random_images)
 
