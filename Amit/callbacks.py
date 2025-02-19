@@ -24,10 +24,8 @@ random_images = [
 # Bot Owner ID (list for proper checking)
 OWNER_ID = [6803505727]
 
-app = Client("my_bot", bot_token=BOT_TOKEN)
-
 # ------------------- Set Commands ------------------- #
-@app.on_message(filters.command("set"))
+@Client.on_message(filters.command("set"))
 async def set_commands(client: Client, message: Message):
     if message.from_user.id not in OWNER_ID:
         await message.reply("🚫 You are not authorized to use this command.")
@@ -45,8 +43,8 @@ async def set_commands(client: Client, message: Message):
     await message.reply("✅ Commands configured successfully!")
 
 # ------------------- Start Command ------------------- #
-@app.on_message(filters.command("start"))
-@app.on_callback_query(filters.regex("start"))
+@Client.on_message(filters.command("start"))
+@Client.on_callback_query(filters.regex("start"))
 async def account_login(client: Client, message: Message):
     random_image = random.choice(random_images)
 
@@ -68,7 +66,7 @@ async def account_login(client: Client, message: Message):
         reply_markup=buttons
     )
 # ------------------- Bot Uptime ------------------- #
-@app.on_callback_query(filters.regex("uptime"))
+@Client.on_callback_query(filters.regex("uptime"))
 async def uptime_callback(client: Client, query: CallbackQuery):
     uptime_seconds = int(time.time() - START_TIME)
     uptime_str = time.strftime("%H hours %M minutes %S seconds", time.gmtime(uptime_seconds))
@@ -81,7 +79,7 @@ MERGER_TXT = "> **⚙️ Merge PDFs & Images**\n\n📄 **/merge** - Start mergin
 RESTRICTED_TXT = "> **💡 Restricted content saver**\n\n🔒 **Private Chats**\n🌐 **Public Chats**\n📂 **Batch Mode**"
 ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟\n\n• ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)\n• ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)\n• ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)"""
 
-@app.on_callback_query(filters.regex("help"))
+@Client.on_callback_query(filters.regex("help"))
 async def help_callback(client: Client, callback_query: CallbackQuery):
     await callback_query.answer()
     reply_markup = InlineKeyboardMarkup([
@@ -92,19 +90,19 @@ async def help_callback(client: Client, callback_query: CallbackQuery):
     ])
     await callback_query.message.edit_text(HELP_TEXT, reply_markup=reply_markup)
 
-@app.on_callback_query(filters.regex("restricted"))
+@Client.on_callback_query(filters.regex("restricted"))
 async def restricted_callback(client: Client, callback_query: CallbackQuery):
     await callback_query.answer()
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back", callback_data="help")]])
     await callback_query.message.edit_text(RESTRICTED_TXT, reply_markup=reply_markup)
 
-@app.on_callback_query(filters.regex("combiner"))
+@Client.on_callback_query(filters.regex("combiner"))
 async def combiner_callback(client: Client, callback_query: CallbackQuery):
     await callback_query.answer()
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back", callback_data="help")]])
     await callback_query.message.edit_text(MERGER_TXT, reply_markup=reply_markup)
 
-@app.on_callback_query(filters.regex("request"))
+@Client.on_callback_query(filters.regex("request"))
 async def request_info_callback(client: Client, callback_query: CallbackQuery):
     await callback_query.answer()
     request_text = (
@@ -116,13 +114,10 @@ async def request_info_callback(client: Client, callback_query: CallbackQuery):
     reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("🔙 Back", callback_data="help")]])
     await callback_query.message.edit_text(request_text, reply_markup=reply_markup, disable_web_page_preview=True)
 
-@app.on_callback_query(filters.regex("about"))
+@Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query: CallbackQuery):
     await callback_query.answer()
     reply_markup = InlineKeyboardMarkup([
         [InlineKeyboardButton("🔙 Back", callback_data="start"), InlineKeyboardButton("🕒 Uptime", callback_data="uptime")]
     ])
     await callback_query.message.edit_text(ABOUT_TXT, reply_markup=reply_markup, disable_web_page_preview=True)
-
-# Run the bot
-app.run()
