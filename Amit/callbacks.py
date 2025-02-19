@@ -22,11 +22,14 @@ random_images = [
 async def account_login(client: Client, m: Message):
     random_image = random.choice(random_images)
 
-    caption = "**🎥 Welcome to Text to Video Leech Bot!!\n\nSend a txt file, and leave rest of the things on me! 😉**" 
+    caption = (
+        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
+        "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
 
-    buttons = InlineKeyboardMarkup([
-        [InlineKeyboardButton("✜ Developer ✜", url="https://t.me/Axa_bachha"),
-         InlineKeyboardButton("🕒 Check Uptime", callback_data="uptime")]
+    buttons = InlineKeyboardMarkup([ 
+        [InlineKeyboardButton("🕵 ʜᴇʟᴘ", callback_data="help"), InlineKeyboardButton("📜 ᴀʙᴏᴜᴛ", callback_data="about")],
+        [InlineKeyboardButton("❗❗ ᴅᴇᴠᴇʟᴏᴘᴇʀ ❗❗", url="https://t.me/Axa_bachha")]
     ])
     
     await client.send_photo(
