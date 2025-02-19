@@ -22,6 +22,7 @@ random_images = [
 ]
 
 @Client.on_message(filters.command("start") & filters.private)
+@Client.on_callback_query(filters.regex("uptime"))
 async def account_login(client: Client, message: Message):
     random_image = random.choice(random_images)
 
