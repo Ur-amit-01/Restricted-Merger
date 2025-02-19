@@ -32,8 +32,8 @@ random_images = [
     "https://envs.sh/Q_x.jpg"
 ]
 
-@bot.on_message(filters.command(["start"]))
-async def account_login(bot: Client, m: Message):
+@Client.on_message(filters.command(["start"]))
+async def account_login(client: Client, m: Message):
     random_image = random.choice(random_images)
     
     caption =  "**🎥 Welcome to Text to Video Leech Bot!!\n\nSend a txt file, and leave rest of the things on me! 😉**",
@@ -49,8 +49,8 @@ async def account_login(bot: Client, m: Message):
         reply_markup=buttons
     )
 
-@bot.on_callback_query(filters.regex("uptime"))
-async def uptime_callback(bot: Client, query: CallbackQuery):
+@Client.on_callback_query(filters.regex("uptime"))
+async def uptime_callback(client: Client, query: CallbackQuery):
     uptime_seconds = int(time.time() - START_TIME)
     uptime_str = time.strftime("%H hours %M minutes %S seconds", time.gmtime(uptime_seconds))
     
