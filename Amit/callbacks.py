@@ -23,7 +23,7 @@ async def account_login(client: Client, m: Message):
     random_image = random.choice(random_images)
 
     caption = (
-        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "> **✨👋🏻 ʜᴇʟʟᴏ ᴜsᴇʀ !!**\n\n"
         "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
         "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
     )
