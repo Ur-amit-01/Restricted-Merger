@@ -26,6 +26,7 @@ async def account_login(client: Client, m: Message):
         f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
         "**🔋 ɪ ᴀᴍ ᴀ ᴘᴏᴡᴇʀꜰᴜʟ ʙᴏᴛ ᴅᴇꜱɪɢɴᴇᴅ ᴛᴏ ᴀꜱꜱɪꜱᴛ ʏᴏᴜ ᴇꜰꜰᴏʀᴛʟᴇꜱꜱʟʏ.**\n\n"
         "**🔘 Usᴇ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ʟᴇᴀʀɴ ᴍᴏʀᴇ ᴀʙᴏᴜᴛ ᴍʏ ғᴜɴᴄᴛɪᴏɴs!**"
+    )
 
     buttons = InlineKeyboardMarkup([ 
         [InlineKeyboardButton("🕵 ʜᴇʟᴘ", callback_data="help"), InlineKeyboardButton("📜 ᴀʙᴏᴜᴛ", callback_data="about")],
