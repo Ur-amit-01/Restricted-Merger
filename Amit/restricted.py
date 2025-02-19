@@ -96,7 +96,7 @@ async def progress(current, total, message, type):
 
 #————————————————————————————————————————————————————————————————————————————————————————————
 
-@Client.on_message(filters.command(["cancel"]))
+@Client.on_message(filters.command("cancel") & filters.private)
 async def send_cancel(client: Client, message: Message):
     logger.info(f"/cancel command triggered by user {message.from_user.id}")
     batch_temp.IS_BATCH[message.from_user.id] = True
