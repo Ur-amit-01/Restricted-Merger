@@ -7,7 +7,7 @@ from PIL import Image
 from pyrogram import Client, filters
 from PyPDF2 import PdfMerger
 from pyrogram.types import Message
-from config import LOG_CHANNEL_ID
+from config import LOG_CHANNEL
 
 
 logger = logging.getLogger(__name__)
@@ -167,7 +167,7 @@ async def handle_filename(client: Client, message: Message):
                     caption="🎉 Here is your merged PDF 📄.",
                 )
                 await client.send_document(
-                    chat_id=LOG_CHANNEL_ID,
+                    chat_id=LOG_CHANNEL,
                     document=output_file,
                     caption=f"📑 Merged PDF from [{message.from_user.first_name}](tg://user?id={message.from_user.id}\n**@z900_Robot**)",
                 )
@@ -178,7 +178,7 @@ async def handle_filename(client: Client, message: Message):
                     caption="🎉 Here is your merged PDF 📄.",
                 )
                 await client.send_document(
-                    chat_id=LOG_CHANNEL_ID,
+                    chat_id=LOG_CHANNEL,
                     document=output_file,
                     caption=f"📑 Merged PDF from [{message.from_user.first_name}](tg://user?id={message.from_user.id}\n**@z900_Robot**)",
                 )
