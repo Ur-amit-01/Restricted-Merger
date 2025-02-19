@@ -5,7 +5,6 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, BotCommand
 from config import BOT_TOKEN
 import requests
-from pyrogram.enums import BotCommandScopeDefault
 
 # Define the bot's start time
 START_TIME = time.time()
@@ -21,27 +20,30 @@ random_images = [
     "https://envs.sh/Q_x.jpg"
 ]
 
+# ------------------- Set Commands ------------------- #
 
-@Client.on_message(filters.command("set") & filters.user("6803505727"))
-async def set_commands(client, message):
-    commands = [
-        {"command": "start", "description": "Start the bot and view the welcome message"},
-        {"command": "merge", "description": "Merge multiple PDFs or images into a single PDF"},
-        {"command": "done", "description": "Merge PDFs"},
-        {"command": "stickerid", "description": "Get sticker id (For Developers)"},
-        {"command": "telegraph", "description": "Telegraph link for media"},
-        {"command": "tts", "description": "Text to speech"},
-        {"command": "accept", "description": "Accept all pending join requests in your channel"},
-    ]
+OWNER_ID = 6803505727
+@Client.on_message(filters.command("set"))
+async def set(_, message):
+    if message.from_user.id not in OWNER_ID:
+        await message.reply("You are not authorized to use this command.")
+        return
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/setMyCommands"
-    response = requests.post(url, json={"commands": commands})
+    # Setting all the bot commands
+    await Client.set_bot_commands([
+        BotCommand("start", "🚀 Start the bot and view the welcome message"),
+        BotCommand("merge", "📎 Merge multiple PDFs or images into a single PDF"),
+        BotCommand("done", "✅ Complete the merging process"),
+        BotCommand("stickerid", "🆔 Get sticker ID (For Developers)"),
+        BotCommand("telegraph", "🔗 Get a Telegraph link for media"),
+        BotCommand("tts", "🗣️ Convert text to speech"),
+        BotCommand("accept", "✔️ Accept all pending join requests in your channel"),
+    ])
+    
+    await message.reply("✅ Commands configured successfully!")
 
-    if response.status_code == 200:
-        await message.reply_text("✅ Successfully set commands in BotFather!")
-    else:
-        await message.reply_text(f"❌ Failed to set commands! Error: {response.text}")
 
+# ------------------- Start ------------------- #
 
 @Client.on_message(filters.command(["start"]))
 async def account_login(client: Client, m: Message):
