@@ -79,9 +79,7 @@ MERGER_TXT = """> **⚙️ Hᴇʟᴘ Dᴇsᴄʀɪᴘᴛɪᴏɴ ⚙️**
 **• 📝 Filename: Provide a custom name for your PDF.**
 **• 📸 Thumbnail: Use (Filename) -t (Thumbnail link).**"""
 
-@Client.on_message(filters.command("start"))
-async def start(bot, message):
-    await message.reply_text("Welcome! The bot is up and running.")
+#--------------------------------------------------------
 
 @Client.on_callback_query(filters.regex("restricted"))
 async def restricted_callback(client: Client, callback_query):
