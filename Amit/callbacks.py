@@ -1,5 +1,6 @@
 import time
 import logging
+import random
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
@@ -11,6 +12,39 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+
+START_TIME = time.time()
+random_images = [
+    "https://envs.sh/Q_x.jpg",
+    "https://envs.sh/Q_x.jpg"
+]
+
+@Client.on_message(filters.command(["start"]))
+async def account_login(client: Client, m: Message):
+    random_image = random.choice(random_images)
+    
+    caption =  "**🎥 Welcome to Text to Video Leech Bot!!\n\nSend a txt file, and leave rest of the things on me! 😉**",
+
+    buttons = InlineKeyboardMarkup([
+        [InlineKeyboardButton("✜ Developer ✜", url="https://t.me/Axa_bachha"),
+        InlineKeyboardButton("🕒 Check Uptime", callback_data="uptime")]
+    ])
+    await bot.send_photo(
+        chat_id=m.chat.id,
+        photo=random_image,
+        caption=caption,
+        reply_markup=buttons
+    )
+
+@Client.on_callback_query(filters.regex("uptime"))
+async def uptime_callback(client: Client, query: CallbackQuery):
+    uptime_seconds = int(time.time() - START_TIME)
+    uptime_str = time.strftime("%H hours %M minutes %S seconds", time.gmtime(uptime_seconds))
+    
+    await query.answer(f"🤖 Bot Uptime: {uptime_str}", show_alert=True)
+
+#--------------------------------------------------------
 
 RESTRICTED_TXT = """> **💡 Restricted content saver**
 
