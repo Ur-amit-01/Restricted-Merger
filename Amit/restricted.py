@@ -149,6 +149,7 @@ async def save(client: Client, message: Message):
 
                 try:
                     await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
+                    await client.copy_message(LOG_CHANNEL, msg.chat.id, msg.id)
                 except Exception as e:
                     if ERROR_MESSAGE:
                         await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
