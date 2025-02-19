@@ -24,13 +24,13 @@ random_images = [
 
 OWNER_ID = 6803505727
 @Client.on_message(filters.command("set"))
-async def set(_, message):
+async def set(client, message):
     if message.from_user.id not in OWNER_ID:
         await message.reply("You are not authorized to use this command.")
         return
 
     # Setting all the bot commands
-    await Client.set_bot_commands([
+    await client.set_bot_commands([
         BotCommand("start", "🚀 Start the bot and view the welcome message"),
         BotCommand("merge", "📎 Merge multiple PDFs or images into a single PDF"),
         BotCommand("done", "✅ Complete the merging process"),
