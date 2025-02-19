@@ -17,7 +17,7 @@ def convert(text):
     return audio
 
 
-@Client.on_message(filters.command("tts"))
+@Client.on_message(filters.command("tts") & filters.private)
 async def text_to_speech(bot, message: Message):
     vj = await bot.ask(chat_id = message.from_user.id, text = "Now send me your text.")
     if vj.text:
