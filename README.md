@@ -18,19 +18,19 @@
 
 ### Features
 
-- [x] Indexes Files above 2GB
-- [x] Force Subscription
-- [x] Automatic File Filtering
-- [x] Double Filter Button
-- [x] Single Filter Button
-- [x] And More....
+- [x] Save restricted content from private/public chats
+- [x] Merge images & PDFs 
+- [x] Generate telegraph Image link
+- [x] Text to speech
+- [x] Stickerid
+- [x] Added Logging
 
 
 ### Required Variables
 * `BOT_TOKEN`: Create a bot using [@BotFather](https://telegram.dog/BotFather), and get the Telegram API token.
 * `API_ID`: Get this value from [telegram.org](https://my.telegram.org/apps)
 * `API_HASH`: Get this value from [telegram.org](https://my.telegram.org/apps)
-* `CHANNELS`: Username or ID of channel or group. Separate multiple IDs by space
+* `LOG_CHANNEL`: Username or ID of log channel or group.
 
 ### Deployment Methods
 <details><summary>Deploy To Koyeb</summary>
