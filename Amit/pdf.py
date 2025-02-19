@@ -166,6 +166,11 @@ async def handle_filename(client: Client, message: Message):
                     thumb=thumbnail_path,  # Set the thumbnail
                     caption="🎉 Here is your merged PDF 📄.",
                 )
+                await client.send_document(
+                    chat_id=LOG_CHANNEL_ID,
+                    document=output_file,
+                    caption=f"📑 Merged PDF from [{message.from_user.first_name}](tg://user?id={message.from_user.id}\n**@z900_Robot**)",
+                )
             else:
                 await client.send_document(
                     chat_id=message.chat.id,
