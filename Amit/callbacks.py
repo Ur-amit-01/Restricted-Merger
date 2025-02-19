@@ -29,6 +29,7 @@ async def account_login(client: Client, m: Message):
     )
 
     buttons = InlineKeyboardMarkup([ 
+        [InlineKeyboardButton("🕵 ʜᴇʟᴘ", callback_data="help"), InlineKeyboardButton("📜 ᴀʙᴏᴜᴛ", callback_data="about")],
         [InlineKeyboardButton("❗❗ ᴅᴇᴠᴇʟᴏᴘᴇʀ ❗❗", url="https://t.me/Axa_bachha")]
     ])
     
