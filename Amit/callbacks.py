@@ -134,11 +134,10 @@ async def request_info_callback(client: Client, callback_query):
 @Client.on_callback_query(filters.regex("about"))
 async def about_callback(client: Client, callback_query):
     try:
-        await callback_query.answer()  # Acknowledge the callback
-        uptime = get_uptime()
-        ABOUT_TXT_MSG = ABOUT_TXT.format(uptime=uptime)
+        await callback_query.answer()
+        ABOUT_TXT_MSG = ABOUT_TXT
         reply_markup = InlineKeyboardMarkup([
-            [InlineKeyboardButton("🔙 Back", callback_data="back")]
+            [InlineKeyboardButton("🔙 Back", callback_data="back"), InlineKeyboardButton("🕒 ᴜᴘᴛɪᴍᴇ", callback_data="uptime")]
         ])
         await callback_query.message.edit_text(
             ABOUT_TXT_MSG,
@@ -154,15 +153,7 @@ ABOUT_TXT = """**⍟───[ MY ᴅᴇᴛᴀɪʟꜱ ]───⍟
 • ᴍʏ ɴᴀᴍᴇ : [z900 ⚝](https://t.me/Z900_robot)
 • ᴍʏ ʙᴇsᴛ ғʀɪᴇɴᴅ : [ᴛʜɪs ᴘᴇʀsᴏɴ](tg://settings)
 • ᴅᴇᴠᴇʟᴏᴘᴇʀ : [ꫝᴍɪᴛ ꢺɪɴɢʜ ⚝](https://t.me/Ur_Amit_01)
-⏳ ᴜᴘᴛɪᴍᴇ : {uptime}**"""
-
-def get_uptime():
-    uptime_seconds = time.time() - start_time
-    days = int(uptime_seconds // (24 * 3600))
-    hours = int((uptime_seconds % (24 * 3600)) // 3600)
-    minutes = int((uptime_seconds % 3600) // 60)
-    seconds = int(uptime_seconds % 60)
-    return f"{days}d : {hours}h : {minutes}m : {seconds}s"
+"""
 
 
 @Client.on_callback_query(filters.regex("help"))
