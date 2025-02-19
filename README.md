@@ -1,4 +1,4 @@
-![Typing SVG](https://readme-typing-svg.herokuapp.com/?lines=PIRO+MOVIE+SEARCH+BOT+!;CREATED+BY+Amit!;A+ADVANCE+BOT+WITH+COOL+FEATURES!)</p>
+![Typing SVG](https://readme-typing-svg.herokuapp.com/?lines=AN+ADVANCE+BOT+WITH+COOL+FEATURES!;CREATED+BY+AMIT!)</p>
 
 <p align="center">
   <img src="Amit/logo.jpg">
