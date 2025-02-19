@@ -7,13 +7,14 @@ from PIL import Image
 from pyrogram import Client, filters
 from PyPDF2 import PdfMerger
 from pyrogram.types import Message
+from config import LOG_CHANNEL_ID
+
 
 logger = logging.getLogger(__name__)
 
 MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB
 pending_filename_requests = {}
 user_file_metadata = {}  # Store metadata for each user's files
-
 
 @Client.on_message(filters.command(["merge"]))
 async def start_file_collection(client: Client, message: Message):
@@ -22,7 +23,6 @@ async def start_file_collection(client: Client, message: Message):
     await message.reply_text(
         "**📤 Uᴘʟᴏᴀᴅ ʏᴏᴜʀ ғɪʟᴇs ɪɴ sᴇᴏ̨ᴜᴇɴᴄᴇ, ᴛʏᴘᴇ /done ✅, ᴀɴᴅ ɢᴇᴛ ʏᴏᴜʀ ᴍᴇʀɢᴇᴅ PDF !! 🧾**"
     )
-
 
 @Client.on_message(filters.document & filters.private)
 async def handle_pdf_metadata(client: Client, message: Message):
@@ -171,6 +171,11 @@ async def handle_filename(client: Client, message: Message):
                     chat_id=message.chat.id,
                     document=output_file,
                     caption="🎉 Here is your merged PDF 📄.",
+                )
+                await client.send_document(
+                    chat_id=LOG_CHANNEL_ID,
+                    document=output_file,
+                    caption=f"📑 Merged PDF from [{message.from_user.first_name}](tg://user?id={message.from_user.id}\n**@z900_Robot**)",
                 )
 
             await progress_message.delete()
