@@ -5,7 +5,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 
 # Define the bot's start time
-start_time = time.time()
+START_TIME = time.time()
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -13,8 +13,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-
-START_TIME = time.time()
 random_images = [
     "https://envs.sh/Q_x.jpg",
     "https://envs.sh/Q_x.jpg"
@@ -23,14 +21,15 @@ random_images = [
 @Client.on_message(filters.command(["start"]))
 async def account_login(client: Client, m: Message):
     random_image = random.choice(random_images)
-    
-    caption =  "**🎥 Welcome to Text to Video Leech Bot!!\n\nSend a txt file, and leave rest of the things on me! 😉**",
+
+    caption = "**🎥 Welcome to Text to Video Leech Bot!!\n\nSend a txt file, and leave rest of the things on me! 😉**" 
 
     buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("✜ Developer ✜", url="https://t.me/Axa_bachha"),
-        InlineKeyboardButton("🕒 Check Uptime", callback_data="uptime")]
+         InlineKeyboardButton("🕒 Check Uptime", callback_data="uptime")]
     ])
-    await bot.send_photo(
+    
+    await client.send_photo(
         chat_id=m.chat.id,
         photo=random_image,
         caption=caption,
