@@ -28,7 +28,7 @@ async def account_login(client: Client, m: Message):
 
     buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("✜ Developer ✜", url="https://t.me/Axa_bachha"),
-        InlineKeyboardButton("🕒 Help", callback_data="help")]
+        InlineKeyboardButton("🕒 Help", callback_data="uptime")]
     ])
     await bot.send_photo(
         chat_id=m.chat.id,
