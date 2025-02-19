@@ -21,7 +21,7 @@ random_images = [
     "https://envs.sh/Q_y.jpg"
 ]
 
-@Client.on_message(filters.command("start") & filters.private)
+
 
 async def account_login(client: Client, message: Message):
     random_image = random.choice(random_images)
