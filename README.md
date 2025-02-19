@@ -4,7 +4,7 @@
   <img src="Amit/logo.jpg">
 </p>
 <h1 align="center">
-  <b>PiroAutoFilterBot</b>
+  <b>My Hobby Project</b>
 </h1>
 
 
