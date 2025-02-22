@@ -31,7 +31,11 @@ async def start_command(client: Client, message: Message):
     # Send the start message with photo and buttons
     await message.reply_photo(
         photo=random_image,
-        caption=f"> **✨👋🏻 Hey {message.from_user.mention}!**\n\nI'm your multi-functional bot!",
+        caption = (
+        f"> **✨👋🏻 Hey {message.from_user.mention} !!**\n\n"
+        "**🔋 I am a powerful bot designed to assist you effortlessly.**\n\n"
+        "**🔘 Use the buttons below to learn more about my functions!**"
+        ),
         reply_markup=buttons
     )
 
