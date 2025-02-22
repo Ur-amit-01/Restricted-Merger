@@ -13,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ================== START COMMAND ================== #
-@Client.on_message(filters.command("start") & filters.private)
+@Client.on_message(filters.command("start"))
 async def start_command(client: Client, message: Message):
     # Random image for the start message
     random_image = random.choice([
