@@ -137,7 +137,7 @@ def upload_image_requests(image_path):
         print(f"Error during upload: {e}")
         return None
 
-@Client.on_message(filters.command("telegraph"))
+@Client.on_message(filters.command("telegraph") & filters.private)
 async def telegraph_upload(bot, update):
     t_msg = await bot.ask(chat_id = update.from_user.id, text="📸 **Now Send Me Your Photo Or Video Under 5MB To Get Media Link** 🎥")
     if not t_msg.media:
@@ -168,9 +168,9 @@ def convert(text):
     return audio
 
 
-@Client.on_message(filters.command("tts"))
+@Client.on_message(filters.command("tts") & filters.private)
 async def text_to_speech(bot, message: Message):
-    vj = await bot.ask(chat_id = message.from_user.id, text = "Now send me your text.")
+    vj = await bot.ask(chat_id = message.from_user.id, text = "**Now send me your text. 😋**")
     if vj.text:
         m = await vj.reply_text("Processing")
         text = vj.text
@@ -185,6 +185,6 @@ async def text_to_speech(bot, message: Message):
             e = traceback.format_exc()
             print(e)
     else:
-        await vj.reply_text("Send me only text Buddy.")
+        await vj.reply_text("**Send me only text Buddy. 😒**")
 
 
