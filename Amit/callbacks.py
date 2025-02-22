@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ================== START COMMAND ================== #
-@Client.on_message(filters.command("start") & filters.private)
+@Client.on_message(filters.command("start"))
 async def start_command(client: Client, message: Message):
     await message.reply_photo(
         photo="https://envs.sh/Q_x.jpg",  # Replace with your picture URL
