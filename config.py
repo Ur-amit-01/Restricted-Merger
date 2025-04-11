@@ -1,7 +1,7 @@
 import os
 from os import environ
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "7408399689:AAGyXnXAIeja9qyg7eEPghKkmL4Z4OJy5-w")
 API_ID = int(os.environ.get("API_ID", "22012880"))
 API_HASH = os.environ.get("API_HASH", "5b0e07f5a96d48b704eb9850d274fe1d")
 SESSION_STRING = os.environ.get("SESSION_STRING", "")
